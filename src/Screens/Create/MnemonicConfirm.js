@@ -1,17 +1,74 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import {Button, SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, ImageBackground,StyleSheet  } from 'react-native'
 // import Svg, { Path } from 'react-native-svg';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 import { Paragraph, Dialog, Portal, Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-
-const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
+import { useNavigation } from '@react-navigation/native';
 
 const MnemonicConfirm = () => {
 
     const [visible, setVisible] = useState(false);
-    const showDialog = () => setVisible(true);
-    const hideDialog = () => setVisible(false);
+    const hideDialog = () => {
+        setVisible(false);
+        goLeft();
+    };
+
+    const [words, setWords] = useState([]);
+    const [randomWords, setRandomWords] = useState([]);
+    const [num, setNum] = useState(0);
+    const [falseCount, setFalseCount] = useState(0);
+    const navigation = useNavigation();
+
+    const goLeft = useCallback(() => navigation.navigate('MnemonicRead'),[]);
+
+    useEffect(() => {
+        RNSecureKeyStore.get("mnemonic")
+	    .then((res) => {
+            // setWord(res.split(' '));
+            console.log(res);
+            let wordList = res.split(" ");
+            setWords(wordList);
+            setRandomWords([...wordList].sort(()=> Math.random() -0.5));
+	    }, (err) => {
+		    console.log(err);
+	    });
+    },[]);
+   
+    useEffect(() => {
+        //통과 여부 체크하기
+        //num === 24 && navigation.navigate('Success');
+        navigation.navigate('Success');
+    }, [num]);
+    useEffect(() => {
+        //통과 여부 체크하기
+        falseCount === 3  && setVisible(true);
+    }, [falseCount]);
+    
+    const isOrder = (idx) => {
+        
+        //idx 올리기
+        // console.log(num);
+        // console.log(randomWords[idx],words[num])
+        
+        if(randomWords[idx] === words[num]){
+       
+            //자르기
+            setRandomWords(randomWords.filter((item, idx) => 
+                words[num] !== randomWords[idx]
+            ));
+            console.log('+');
+            setNum((prev) => prev+1);
+            console.log('num', num);
+            
+            //setRandomWords(randomWords);
+        }else{
+            setFalseCount((prev) => prev+1);
+            console.log('falseCount', falseCount);
+        }
+
+        }
 
     return (
         <View style = {styles.container}>
@@ -25,26 +82,26 @@ const MnemonicConfirm = () => {
                 }]}>*틀릴 경우 전 화면으로 돌아가 다시 한번 확인하세요.</Text>
                 </View>
                 <View style = {styles.word_list_wrapper}>
-                    {data.map((item) => {
+                    {randomWords.map((item, idx) => {
                         return(
                             <>
-                         <View style= {[styles.word_wrapper]} key = {item}>
-                            <Text style = {[styles.word]}>{item}</Text>
-                        </View>
+                         <TouchableOpacity key={idx} style= {[styles.word_wrapper]} onPress={()=> isOrder(idx)}>
+                            <Text style = {[styles.word]} >{item}</Text>
+                        </TouchableOpacity>
                         </>
                         )
                     })}
                 </View>
                 <PaperProvider>
                 <View style={{justifyContent: 'center'}}>
-                    <TouchableOpacity onPress = {showDialog} style = {styles.confirmBtn}>
+                    {/* <TouchableOpacity onPress = {showDialog} style = {styles.confirmBtn}>
                     <Text style = {styles.confirm_txt}>확인하기</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Portal>
                         {/* Potal 체크 */}
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <View style = {{ marginTop : 50, alignItems: 'center'}}>
-                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>단어 순서가 틀렸습니다.</Text>
+                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>3번 이상 순서가 틀렸습니다.</Text>
                         <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>다시 한번 확인해주세요.</Text>
 
                         <TouchableOpacity style = {{

@@ -7,10 +7,10 @@ import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import bip39 from 'react-native-bip39';
 import rizonjs from '../../../rizonjs/dist/rizon'
 
-const PincodeConfirm = () => {
+const RestorePincode = () => {
 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('MnemonicRead'),[]);
+    const goRight = useCallback(() => navigation.navigate('Main'),[]);
 
     let numberId = [
         {id: 1},
@@ -52,7 +52,7 @@ const PincodeConfirm = () => {
         console.log('pincode', pincode);
        
         //testPincode => 복구 끝나면 pincode로 변경하기
-        RNSecureKeyStore.get("pincode")
+        RNSecureKeyStore.get("testPincode")
 	    .then((res) => {
 		    console.log(res);
             if(pincode === res){
@@ -60,7 +60,8 @@ const PincodeConfirm = () => {
                 bip39.generateMnemonic(256).then(mnemonic => {
                     RNSecureKeyStore.set("mnemonic", mnemonic , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
                     .then(() => {
-                        makeAddress(mnemonic);
+                        //confirm 창
+                        goRight();
                     }, (err) => {
                         console.log(err);
                     });
@@ -252,4 +253,4 @@ const styles = StyleSheet.create({
     }
     });
 
-export default PincodeConfirm;
+export default RestorePincode;

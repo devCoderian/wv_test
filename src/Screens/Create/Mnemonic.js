@@ -13,38 +13,21 @@ const MnemonicRead  = () => {
 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('MnemonicConfirm'),[]) 
- 
-    // const [word, setWord] = useState([]);
+    const [word, setWord] = useState([]);
+    useEffect(() => {
+        RNSecureKeyStore.get("mnemonic")
+	    .then((res) => {
+            console.log(res);
+            let wordList = res.split(" ");
+            setWord(wordList);
+	    }, (err) => {
+		    console.log(err);
+	    });
+    },[]);
 
 
-    // useEffect(()=>{
-    //     RNSecureKeyStore.get("mnemonic")
-	//     .then((res) => {
-	// 	    console.log(res);
-	//     }, (err) => {
-	// 	    console.log(err);
-	//     });
-    // });
-
-    // useEffect(()=>{
-    //     RNSecureKeyStore.get("mnemonic")
-	//     .then((res) => {
-    //       console.log(JSON.stringify(res));
-	//     }, (err) => {
-	// 	    console.log(err);
-	//     });
-    // })
-    // const getMnemonic = async () => {
-       
-    //     RNSecureKeyStore.get("mnemonic")
-	//     .then((res) => {
-	// 	    setWord(res);
-	//     }, (err) => {
-	// 	    console.log(err);
-	//     });
-     
-    // }
    
+
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -55,18 +38,18 @@ const MnemonicRead  = () => {
                 <Text style = {styles.txt_subtitle}>* 지갑 복구 시 사용됩니다.</Text>
                 </View>
                 <View style = {styles.word_list_wrapper}>
-                    {data.map((item) => {
+                    {word.map((item, idx) => {
                         return(
                             <>
-                         <View style= {[styles.word_wrapper]} key = {item}>
-                            <Text style = {[styles.word]} key = {item} >{item}</Text>
+                         <View key={idx} style= {[styles.word_wrapper]}>
+                            <Text style = {[styles.word]}>{item}</Text>
                         </View>
                         </>
                         )
                     })}
                 </View>
                 <View style={{justifyContent: 'center'}}>
-                    <TouchableOpacity style = {styles.confirmBtn} onPress={()=> console.log('확인')}>
+                    <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
                     <Text style = {styles.confirm_txt}>확인하기</Text>
                     </TouchableOpacity>
                 </View>

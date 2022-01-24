@@ -1,18 +1,28 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import MAIN from '../../../src/assets/images/spaceship.png';
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 
 const Home = () => {
+
+// 복구 테스트를 위한 시연용 핀코드 저장
+
 
 //  컴포넌트 1) 지갑 생성 화면 이동
 //  컴포넌트 2) 지갑 복구 화면 이동
 
-  
     const navigation = useNavigation();
+    const goRestore = useCallback(() =>
+    RNSecureKeyStore.set("testPincode",'1111', {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+    .then((res)=> {
+        console.log(res)
+        navigation.navigate('MnemonicInput')
+    }),[]) ;
+   
     const goRight = useCallback(() => navigation.navigate('Pincode'),[]) 
-
+    //const goRestore = useCallback(() => navigation.navigate('Main'),[]) 
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -26,7 +36,7 @@ const Home = () => {
                     <TouchableOpacity style = {styles.btn_create} onPress = {goRight}>
                     <Text style ={{  color: '#fff', textAlign: 'center'}}>지갑 생성하기</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style = {styles.btn_restore} onPress = {goRight}>
+                    <TouchableOpacity style = {styles.btn_restore} onPress = {goRestore}>
                         <Text  style ={{  color: '#fff', textAlign: 'center'}}>지갑 복구하기</Text>
                     </TouchableOpacity>
                 </View> 

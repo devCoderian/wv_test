@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, ImageBackground,StyleSheet  } from 'react-native'
-// import Svg, { Path } from 'react-native-svg';
-// import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
+
+// rizonjs확인
 
 const Success = () => {
+    const navigation = useNavigation();
+    const goRight = useCallback(() => navigation.navigate('Home'),[]);
+    // const [mnemonic, setMnemonic] = useState();
+
+    // useEffect(() => {
+    // RNSecureKeyStore.get("mnemonic").then((res) => {
+    //     setMnemonic(res);
+    // });
+        
+    // },[]);
+
     return (
         <SafeAreaView style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -13,7 +26,7 @@ const Success = () => {
                     <View style = {styles.word_list_wrapper}>
                     </View>
                     <View style={{justifyContent: 'center'}}>
-                        <TouchableOpacity style = {styles.confirmBtn}>
+                        <TouchableOpacity style = {styles.confirmBtn} onPress ={goRight}>
                         <Text style = {styles.confirm_txt}>지갑 확인하기</Text>
                         <Text style = {styles.confirm_icon}>-</Text>
                         </TouchableOpacity>

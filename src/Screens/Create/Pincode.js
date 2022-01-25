@@ -4,7 +4,7 @@ import BG from '../../../src/assets/images/bg_2.png';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
-
+import Topbar from '../../Components/Topbar'
 const Pincode = () => {
 
     const navigation = useNavigation();
@@ -65,9 +65,6 @@ const Pincode = () => {
                 continue;
             }
         }
-
-        
-        console.warn(code);
     }
 
     const onDelete = () => {
@@ -84,13 +81,13 @@ const Pincode = () => {
                 continue;
             }
         }
-        console.warn(code);
         setPincode(code);
     }
 
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
+            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
                     <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
@@ -104,6 +101,7 @@ const Pincode = () => {
                         })
                     }
                 </View>
+            </View>
                 <View style = {styles.number_container}>
                     {number.map((item, idx)=>{
                         return(
@@ -116,7 +114,6 @@ const Pincode = () => {
                     <TouchableOpacity style={styles.delete_btn} onPress={() => onDelete()}>
                         <Text style= {{color: '#fff'}}>delete</Text>
                     </TouchableOpacity>
-            </View>
             </ImageBackground>
         </SafeAreaView> 
   );
@@ -131,7 +128,7 @@ const styles = StyleSheet.create({
     },
     input_box:{
         width: '100%',
-        height: '37%',
+        flex: 1,
         backgroundColor: '#F1F1F1',
         alignItems:'center'
     },
@@ -141,16 +138,16 @@ const styles = StyleSheet.create({
     },
     txt_title: {
         width: 250,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '500',
-        lineHeight: 58,
+        lineHeight: 35,
         textAlign: 'center',
         color: '#000',
     },
     txt_subtitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '400',
-        lineHeight: 21, 
+        lineHeight: 25, 
         color: '#000'
     },
     code_wrapper:{
@@ -188,28 +185,29 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.45,
         shadowRadius: 3.84,
         elevation: 5,
     },
     number_container: {
+        flex: 1.8,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 90,
-        width: 280,
+        marginTop: 25,
+        width: 300,
         height: 348,
         alignItems: 'center',
         justifyContent: 'center'
     },
     number_pad:{
-        width: 75,
-        height: 75,
-        borderRadius: 75,
+        width: 80,
+        height: 80,
+        borderRadius: 80,
         justifyContent: 'center',
         alignItems:'center',
         backgroundColor: 'rgba(225, 255, 255, 0.2)',
-        marginHorizontal: 9,
-        marginVertical: 7
+        marginHorizontal: 10,
+        marginVertical: 8
     },
     number:{
         color: '#fff',

@@ -7,9 +7,9 @@ import { SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, Image
 // import { Mnemonic  } from 'bitcore-mnemonic';
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
+// const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
 
-const MnemonicRead  = () => {
+const MnemonicInfo  = () => {
 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('MnemonicConfirm'),[]) 
@@ -149,4 +149,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default MnemonicRead;
+export default MnemonicInfo;

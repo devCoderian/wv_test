@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useState} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, ImageBackground,StyleSheet  } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // rizonjs확인
 
 const Success = () => {
@@ -28,7 +27,8 @@ const Success = () => {
                     <View style={{justifyContent: 'center'}}>
                         <TouchableOpacity style = {styles.confirmBtn} onPress ={goRight}>
                         <Text style = {styles.confirm_txt}>지갑 확인하기</Text>
-                        <Text style = {styles.confirm_icon}>-</Text>
+                        <Icon name = 'Home' size={20} color='#fff' />
+                        {/* <Text style = {styles.confirm_icon}>-</Text> */}
                         </TouchableOpacity>
                     </View>
                 </View>

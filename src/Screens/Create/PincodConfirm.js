@@ -10,7 +10,7 @@ import rizonjs from '../../../rizonjs/dist/rizon'
 const PincodeConfirm = () => {
 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('MnemonicRead'),[]);
+    const goRight = useCallback(() => navigation.navigate('MnemonicInfo'),[]);
 
     let numberId = [
         {id: 1},
@@ -94,9 +94,6 @@ const PincodeConfirm = () => {
                 continue;
             }
         }
-
-        
-        console.warn(code);
     }
 
     const onDelete = () => {
@@ -113,7 +110,6 @@ const PincodeConfirm = () => {
                 continue;
             }
         }
-        console.warn(code);
         setPincode(code);
     }
 
@@ -171,14 +167,14 @@ const styles = StyleSheet.create({
     },
     txt_title: {
         width: 250,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '500',
-        lineHeight: 58,
+        lineHeight: 35,
         textAlign: 'center',
         color: '#000',
     },
     txt_subtitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '400',
         lineHeight: 21, 
         color: '#000'
@@ -201,7 +197,7 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.45,
         shadowRadius: 3.84,
         elevation: 5,
     },
@@ -225,21 +221,21 @@ const styles = StyleSheet.create({
     number_container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 90,
-        width: 280,
+        marginTop: 115,
+        width: 300,
         height: 348,
         alignItems: 'center',
         justifyContent: 'center'
     },
     number_pad:{
-        width: 75,
-        height: 75,
-        borderRadius: 75,
+        width: 80,
+        height: 80,
+        borderRadius: 80,
         justifyContent: 'center',
         alignItems:'center',
         backgroundColor: 'rgba(225, 255, 255, 0.2)',
-        marginHorizontal: 9,
-        marginVertical: 7
+        marginHorizontal: 10,
+        marginVertical: 8
     },
     number:{
         color: '#fff',

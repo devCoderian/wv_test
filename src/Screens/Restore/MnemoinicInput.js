@@ -28,8 +28,6 @@ const MnemoinicInput = () => {
         console.log("mnemonic", mnemonic.replace(/(\s*)/g, ""));
         console.log(inputText === mnemonic.replace(/(\s*)/g, ""));
         console.log(typeof inputText);
-        console.log(typeof mnemonic.replace(/(\s*)/g, ""));
-        //문자열 공백 제거 정규식
         if(inputText == mnemonic.replace(/(\s*)/g, "")){
             console.log('통과');
             goRight();

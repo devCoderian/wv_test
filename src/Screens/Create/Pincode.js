@@ -105,8 +105,8 @@ const Pincode = () => {
                 <View style = {styles.number_container}>
                     {number.map((item, idx)=>{
                         return(
-                            <TouchableOpacity key = {idx} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
-                                <Text style = {styles.number}>{item.id}</Text>
+                            <TouchableOpacity key = {`Num${idx}`} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                                <Text key = {`Text${idx}`} style = {styles.number}>{item.id}</Text>
                             </TouchableOpacity>
                         )
                     })}

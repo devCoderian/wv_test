@@ -7,12 +7,16 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Switch } from 'react-native-paper';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+
 const Topbar = ({ back, logo, title, colorStyle, color='#fff'}) => {
-    console.log('title', title);
-    console.log('color', color)
+    
+    const lang = useSelector((state) => state.lang);
+
+    console.log('lang!!!!', lang);
     const { t, i18n } = useTranslation();
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-    const [lang, setLang] = useState('ko');
+    // const [lang, setLang] = useState('ko');
     
     const onToggleSwitch = () => {
         setIsSwitchOn(!isSwitchOn)
@@ -27,12 +31,12 @@ const Topbar = ({ back, logo, title, colorStyle, color='#fff'}) => {
         isSwitchOn === true ?  i18n.changeLanguage('en') : i18n.changeLanguage('ko');
     }, [isSwitchOn]);
     
-    const changeLang = () => {
-        console.log('언어선택 버튼 만들기');r
-          AsyncStorage.setItem('lang', lang, () => {
-                console.log('성공')
-          });
-    }
+    // const changeLang = () => {
+    //     console.log('언어선택 버튼 만들기');r
+    //       AsyncStorage.setItem('lang', lang, () => {
+    //             console.log('성공')
+    //       });
+    // }
 
     
     

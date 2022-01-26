@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 from 'react-native-bip39';
+import bip39 , {wordlists} from 'react-native-bip39';
+
 import rizonjs from '../../../rizonjs/dist/rizon'
 
 const PincodeConfirm = () => {
@@ -37,12 +38,17 @@ const PincodeConfirm = () => {
         const address = rizon.getAddress(mnemonic);
         const ecpairPriv = rizon.getECPairPriv(mnemonic);
         console.log(ecpairPriv);
-        goRight(); 
-        // RNSecureKeyStore.set("address", address, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        // .then(()=> {
-        //        goRight(); 
-        // });
-      
+        console.log(ecpairPriv.toString('hex'));
+        // goRight(); 
+        RNSecureKeyStore.set("address", address, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        .then(()=> {
+            RNSecureKeyStore.set("privkey", ecpairPriv.toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+            .then(()=> {
+                //wordlists -> 니모닉 단어 리스트 불러오기(wordlists)
+                //goRight(); 
+            });
+        });
+        console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
       
     }
 
@@ -57,6 +63,8 @@ const PincodeConfirm = () => {
 		    console.log(res);
             if(pincode === res){
                 console.log('일치, 니모닉 화면으로 넘어가기');
+                // let check = bip39.generateMnemonic();
+                // console.log(check);
                 bip39.generateMnemonic(256).then(mnemonic => {
                     RNSecureKeyStore.set("mnemonic", mnemonic , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
                     .then(() => {

@@ -17,7 +17,7 @@ const Home = () => {
 
     const navigation = useNavigation();
    
-//   const goRestore = useCallback(() =>
+//    const goRestore = useCallback(() =>
 //     RNSecureKeyStore.set("testPincode",'1111', {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
 //     .then((res)=> {
 //         console.log(res)

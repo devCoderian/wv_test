@@ -95,18 +95,18 @@ const Pincode = () => {
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
-                        pincode.map(item => {
+                        pincode.map((item, idx) => {
                             let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
-                            return <View style= {style}></View>
+                            return <View key = {idx} style= {style}></View>
                         })
                     }
                 </View>
             </View>
                 <View style = {styles.number_container}>
-                    {number.map((item, idx)=>{
+                    {number.map((item) =>{
                         return(
-                            <TouchableOpacity key = {`Num${idx}`} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
-                                <Text key = {`Text${idx}`} style = {styles.number}>{item.id}</Text>
+                            <TouchableOpacity key = {item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                                <Text style = {styles.number}>{item.id}</Text>
                             </TouchableOpacity>
                         )
                     })}

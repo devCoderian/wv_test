@@ -6,6 +6,7 @@ import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
+import Topbar from '../../Components/Topbar';
 
 const Main = () => {
   
@@ -67,9 +68,10 @@ const Main = () => {
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
+              <Topbar logo={true}/>
                 <View style = {styles.content} >
-                <View style = {{ marginTop: 40}} >
-                    <Text style = {styles.txt_title}>my wallet</Text>
+                <View style={styles.container} >
+                    {/* <Text style = {styles.txt_title}>my wallet</Text> */}
                     {/* <Text style = {{color: '#fff'}}>주소</Text> */}
                 </View>
                 <View style = {styles.address_wrapper} >

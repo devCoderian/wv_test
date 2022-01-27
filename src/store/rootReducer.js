@@ -1,5 +1,5 @@
 const initialState = {
-    language: 'ko' , //getAsyncStorage(i18n.js 고려해보기)
+    language: false , //getAsyncStorage(i18n.js 고려해보기)
     amount: '',
     sendInfo: {
         address: '',
@@ -11,11 +11,11 @@ const initialState = {
 
 export const rootReducer = (state= initialState, action) => {
     switch (action.type) {
-        case 'changeLang':
+        case 'CHANGE_ACTION':
             return {...state, language: action.lang }
-        case 'saveAmount':
+        case 'SAVE_AMOUNT':
             return {...state, amount: action.amount}
-        case 'sendInfo': 
+        case 'SEND_INFO': 
             return {...state, sendInfo: action.sendInfo}
     }
     return state

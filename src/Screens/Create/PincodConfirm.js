@@ -91,8 +91,6 @@ const PincodeConfirm = () => {
                 code[i] = id;
                 setPincode(code);
                 if(i === 3){
-                    // code[i] = id;
-                     // RNSecureKeyStore.set(pincode);
                     // 4 되면  securestorage 저장 
                     makeSecureKey(code);
                     
@@ -131,16 +129,16 @@ const PincodeConfirm = () => {
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
-                        pincode.map(item => {
+                        pincode.map((item, idx) => {
                             let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
-                            return <View style= {style}></View>
+                            return <View key = {idx} style= {style}></View>
                         })
                     }
                 </View>
                 <View style = {styles.number_container}>
-                    {number.map((item, idx)=>{
+                    {number.map((item)=>{
                         return(
-                            <TouchableOpacity key={idx} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                            <TouchableOpacity key={item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
                                 <Text style = {styles.number}>{item.id}</Text>
                             </TouchableOpacity>
                         )

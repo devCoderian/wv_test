@@ -6,34 +6,17 @@ import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
-const SendAddress = () => {
+const Setting = () => {
   
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('SendInput'),[]) 
+    const goRight = useCallback(() => navigation.navigate('SendInfo'),[]) 
 
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
               <Topbar logo={true}/>
-                <View style = {styles.content} >
-                <View style = {styles.progress_wrapper}>
-                    <View style = {[styles.progress_bar, {
-                        backgroundColor: '#0096F0'
-                    }]}></View>
-                    <View style = {styles.progress_bar}></View>
-                    <View style = {styles.progress_bar}></View>                
-                </View>
-                <View style = {{ marginTop: 40}} >
-                    <Text style = {styles.txt_subtitle}>수취인 주소</Text>
-                    {/* <Text style = {{color: '#fff'}}>주소</Text> */}
-                </View>
-                <View style = {styles.address_wrapper}>
-                    <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
-                        <View>
-                        <Text style = {styles.txt_subtitle}>address Lorem Ipsum is simply dummy text of...</Text>
-                        </View>
-                    </View>
-                </View>
+              
+                <Text style = {{color: '#fff'}}>다국어 변환</Text>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
                     <Text style = {styles.confirm_txt}>Next</Text>
@@ -41,7 +24,14 @@ const SendAddress = () => {
                     {/* <Icon name = 'Home' size={20} color='#fff' /> */}
                     </TouchableOpacity>
                 </View>
-            </View>
+                <Text style = {{color: '#fff'}}>비밀번호 복구 번호 내보내기</Text>
+                <View style={{justifyContent: 'center'}}>
+                    <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
+                    <Text style = {styles.confirm_txt}>비밀번호 복구 번호</Text>
+                    <Icon name = 'arrow-right' size={26} color='#fff'/>
+                    {/* <Icon name = 'Home' size={20} color='#fff' /> */}
+                    </TouchableOpacity>
+                </View>
             </ImageBackground>
     </View>
     )
@@ -65,33 +55,6 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         
     },
-    progress_wrapper: {
-        flexDirection: 'row',
-        marginTop: 7,
-        marginBottom: 25, 
-        justifyContent: 'center'
-    },
-    progress_bar:{
-        margin: 10,
-        width: 60, 
-        height: 3,
-        backgroundColor: ' rgba(160, 160, 160, 0.4);'
-    },
-    txt_subtitle: {
-        fontSize: 16,
-        fontWeight: '400',
-        color: '#fff'
-    },
-    address_wrapper:{
-        width: 370,
-        height: 80,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: 5,
-        marginVertical: 17,
-        padding: 10,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
     confirmBtn: {
         marginTop: 15,
         justifyContent: 'space-around',
@@ -111,4 +74,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SendAddress;
+export default Setting;

@@ -1,48 +1,31 @@
-import React , {useState, useMemo} from 'react';
+import React , {useState, useMemo, useEffect, useCallback} from 'react';
 import { StyleSheet, View, Text  } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { WithLocalSvg } from 'react-native-svg';
 import TestSvg from '../assets/images/rizonlogo.svg';
-import AsyncStorage from '@react-native-community/async-storage';
 import { Switch } from 'react-native-paper';
-import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-
+import { useDispatch } from 'react-redux'
+import { changeAction } from '../store/actions'
+import { useNavigation } from '@react-navigation/native'
 const Topbar = ({ back, logo, title, colorStyle, color='#fff'}) => {
     
-    const lang = useSelector((state) => state.lang);
-
-    console.log('lang!!!!', lang);
     const { t, i18n } = useTranslation();
     const [isSwitchOn, setIsSwitchOn] = useState(false);
-    // const [lang, setLang] = useState('ko');
-    
+    const dispatch = useDispatch();
     const onToggleSwitch = () => {
         setIsSwitchOn(!isSwitchOn)
     };
-   
-    useMemo(() => {
-        // AsyncStorage.getItem('lang', (lang) => {
-        //     lang === 'ko' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
-        //     console.log(lang);
-        // });
-        // i18n.changeLanguage('ko');
-        isSwitchOn === true ?  i18n.changeLanguage('en') : i18n.changeLanguage('ko');
-    }, [isSwitchOn]);
     
-    // const changeLang = () => {
-    //     console.log('언어선택 버튼 만들기');r
-    //       AsyncStorage.setItem('lang', lang, () => {
-    //             console.log('성공')
-    //       });
-    // }
-
+    const navigation = useNavigation();
+    useEffect(() => {
+        isSwitchOn ? dispatch(changeAction('ko')) : dispatch(changeAction('en'));
+    },[isSwitchOn]); 
     
+    const goSettings = useCallback(() => navigation.navigate('Settings'),[]) ;
     
     return (
       <View style = {[colorStyle, styles.container]}>
-        {/* SVG 파일 임포트 */}
             {logo ?  <WithLocalSvg
                 width={100}
                 height={40}
@@ -53,8 +36,8 @@ const Topbar = ({ back, logo, title, colorStyle, color='#fff'}) => {
             <View style={styles.center}>
                 <Text style = {styles.text}>{title}</Text>
             </View>
-         {/* <Icon name = 'cog' size={26} color = {color}  onPress={changeLang}/> */}
-         <Text style= {{color: '#fff', marginRight: 10}}>{t('lang')}</Text><Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+         <Icon name = 'cog' size={26} color = {color}  onPress={goSettings}/>
+            {/* <Switch value={isSwitchOn} onValueChange={onToggleSwitch} /> */}
     </View>
   );
 };

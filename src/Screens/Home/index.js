@@ -7,6 +7,7 @@ import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Topbar from '../../Components/Topbar';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
 
@@ -14,7 +15,9 @@ const Home = () => {
 
 //  컴포넌트 1) 지갑 생성 화면 이동
 //  컴포넌트 2) 지갑 복구 화면 이동
+const lang = useSelector((state) => state.language);
 
+    console.log('lang!!!!', lang);
     const navigation = useNavigation();
    
 //    const goRestore = useCallback(() =>
@@ -29,25 +32,16 @@ const Home = () => {
 
     const { t, i18n } = useTranslation();
 
-    const langCheck = () => {
-        AsyncStorage.getItem('lang', (lang) => {
-            lang === 'ko' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
-            console.log(lang);
-        });
-    }
+    // const langCheck = () => {
+    //     AsyncStorage.getItem('lang', (lang) => {
+    //         lang === 'ko' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
+    //         console.log(lang);
+    //     });
+    // }
 
-    useMemo(() => {
-        // AsyncStorage.getItem('lang', (lang) => {
-        //     lang === 'ko' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
-        //     console.log(lang);
-        // });
-        // i18n.changeLanguage('ko');
-        AsyncStorage.getItem('lang', (err, result) => {
-            const lang = result;  
-            console.log('확인', lang)
+    useEffect(() => {
             lang === 'ko' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
-          });
-    }, []);
+    }, [lang]);
     
     return(
         <SafeAreaView style = {styles.container}>

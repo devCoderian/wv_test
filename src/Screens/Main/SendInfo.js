@@ -5,45 +5,61 @@ import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const SendInfo = () => {
+import Topbar from '../../Components/Topbar';
+const SendAddress = () => {
   
     const navigation = useNavigation();
-    //navigation parma 으로 송금 식별 파람값 보내서 송금 완료 페이지로 이동
-    const goRight = useCallback(() => navigation.navigate('PincodeConfirm'),[]) 
+    const goRight = useCallback(() => navigation.navigate('SendInput'),[]) 
 
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
+              <Topbar logo={true}/>
                 <View style = {styles.content} >
+                <View style = {styles.progress_wrapper}>
+                    <View style = {styles.progress_bar}></View>
+                    <View style = {styles.progress_bar}></View>                
+                    <View style = {[styles.progress_bar, {
+                        backgroundColor: '#0096F0'
+                    }]}></View>
+                </View>
                 <View style = {{ marginTop: 40}} >
-                    <Text style = {styles.txt_title}>my wallet</Text>
+                    <Text style = {{color: '#fff'}}>입력하신 정보를 확인하세요.</Text>
                     {/* <Text style = {{color: '#fff'}}>주소</Text> */}
                 </View>
-                <View style = {styles.coin_info_wrapper}>
-                    <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
-                        <View>
-                        <Text style = {styles.txt_title}>안녕</Text>
-                        </View>
+                <View style = {[styles.address_wrapper, {height: 250}]}>
+                    <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
+                        <Text style = {styles.txt_subtitle}>수량</Text>
+                        <Text style = {styles.txt_subtitle}>0.5 atolo</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
+                        <Text style = {styles.txt_subtitle}>수수료</Text>
+                        <Text style = {styles.txt_subtitle}>0.5 atolo</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
+                        <Text style = {styles.txt_subtitle}>Total</Text>
+                        <Text style = {styles.txt_subtitle}>0.5 atolo</Text>
+                    </View>
+                    <View style ={{width: 370, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.4)', alignSelf: 'center'}}></View>
+                    <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
+                        <Text style = {styles.txt_subtitle}>현재 가능 수량</Text>
+                        <Text style = {styles.txt_subtitle}>0.5 atolo</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
+                        <Text style = {styles.txt_subtitle}>전송 후 가능 수량</Text>
+                        <Text style = {styles.txt_subtitle}>0.5 atolo</Text>
                     </View>
                 </View>
-                <View style = {styles.coin_info_wrapper}>
-                    <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
-                        <View>
-                        <Text style = {styles.txt_title}>안녕</Text>
-                        </View>
-                    </View>
+                <View style = {{ marginTop: 10}} >
+                    <Text style = {{color: '#fff'}}>수취인 주소</Text>
                 </View>
-                <View style = {styles.coin_info_wrapper}>
-                    <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
-                        <View>
-                        <Text style = {styles.txt_title}>안녕</Text>
-                        </View>
-                    </View>
+                <View style = {styles.address_wrapper}>
+                        <Text style = {styles.txt_subtitle}>address Lorem Ipsum is simply dummy text of...</Text>
                 </View>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
-                    <Text style = {styles.confirm_txt}>Next</Text>
+                    <Text style = {styles.confirm_txt}>송금하기</Text>
+                    {/* <Icon name = 'Home' size={20} color='#fff' /> */}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -68,52 +84,35 @@ const styles = StyleSheet.create({
         marginTop: -10,
         paddingHorizontal: 40,
         paddingTop: 20,
-        alignItems:'center'
+        alignItems: 'center'
         
     },
-    txt_title: {
-        fontSize: 20,
-        fontWeight: '700',
-        textAlign: 'center',
-        color: '#fff',
+    progress_wrapper: {
+        flexDirection: 'row',
+        marginTop: 7,
+        marginBottom: 10 , 
+        justifyContent: 'center'
+    },
+    progress_bar:{
+        marginHorizontal: 10,
+        width: 60, 
+        height: 3,
+        backgroundColor: ' rgba(160, 160, 160, 0.4);'
     },
     txt_subtitle: {
-
         fontSize: 16,
         fontWeight: '400',
         color: '#fff'
     },
     address_wrapper:{
         width: 370,
-        height: 50,
+        height: 60,
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
         borderRadius: 5,
-        marginTop: 20,
+        marginVertical: 17,
         padding: 10,
-        alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'space-around'
     },
-    coin_info_wrapper:{
-      width: 370,
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      borderRadius: 5,
-      marginTop: 15,
-      padding: 20,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-evenly'
-    },
-    coin_img:{
-        width: 80,
-        height: 80,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 10
-    },
-    word:{
-        color: '#fff',
-        fontSize: 20
-    }, 
     confirmBtn: {
         marginTop: 15,
         alignItems: 'center',
@@ -130,4 +129,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SendInfo;
+export default SendAddress;

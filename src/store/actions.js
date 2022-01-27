@@ -1,12 +1,14 @@
-export const CHANGE_ACTION = (lang) => {
-    type: 'changeLang',
+export const changeAction = (lang) => ({
+    type: 'CHANGE_ACTION',
     lang
-}
-export const SAVE_AMOUNT = (amount) => {
-    type: 'saveAmount',
-    amount
-    
-}
-export const SEND_INFO = () => {
-    type: 'sendInfo'
-}
+})
+
+export const saveAmount = (amount) => ({
+    type: 'SAVE_ACTION',
+    amount  
+})
+
+export const sendInfo = (sendInfo) => ({
+    type: 'SEND_INFO',
+    sendInfo
+})

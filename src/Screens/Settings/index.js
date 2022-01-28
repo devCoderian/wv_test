@@ -21,6 +21,7 @@ const Setting = () => {
                     <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
                     <Text style = {styles.confirm_txt}>Next</Text>
                     <Icon name = 'arrow-right' size={26} color='#fff'/>
+                    
                     {/* <Icon name = 'Home' size={20} color='#fff' /> */}
                     </TouchableOpacity>
                 </View>

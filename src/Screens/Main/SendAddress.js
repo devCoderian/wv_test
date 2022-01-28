@@ -1,15 +1,40 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase, Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
+import { useDispatch } from 'react-redux';
+import { sendAddress } from '../../store/actions'
+//import { sendInfo } from '../../store/actions'
 const SendAddress = () => {
-  
+    
+
+    const [send_address, setAddress] = useState('');
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('SendInput'),[]) 
+    const dispatch = useDispatch();
+    // const goRight = useCallback(() => {
+    //  console.log(send_address); 
+    //  if(send_address === ''){
+    //     Alert.alert('주소를 입력해주세요.')
+    //  }else{
+    //     dispatch(sendInfo({send_address}))
+    //     navigation.navigate('SendInput')
+    //  } 
+    // },[send_address]) 
+
+    const goRight = useCallback(() => {
+        console.log(send_address); 
+        if(send_address === ''){
+           Alert.alert('주소를 입력해주세요.')
+        }else{
+           dispatch(sendAddress(send_address));
+           navigation.navigate('SendInput')
+        } 
+       },[send_address]) 
+   
 
     return (
         <View style = {styles.container}>
@@ -30,7 +55,13 @@ const SendAddress = () => {
                 <View style = {styles.address_wrapper}>
                     <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
                         <View>
-                        <Text style = {styles.txt_subtitle}>address Lorem Ipsum is simply dummy text of...</Text>
+                        <TextInput style={styles.txt_subtitle}
+                        // multiline={true}
+                        placeholderTextColor = "#fff"
+                        placeholder='수취인 주소를 입력하세요.'
+                        onChangeText={(text) => setAddress(text)}
+                        
+                    />
                         </View>
                     </View>
                 </View>

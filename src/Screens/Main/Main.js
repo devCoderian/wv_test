@@ -22,6 +22,7 @@ const Main = () => {
     const [mnemonic, setMnemonic] = useState("left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect");
     const [amount, setAmount] = useState(0);
     const [add, setAdd] = useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
+    //http://seed-2.testnet.rizon.world:1317/cosmos/bank/v1beta1/balances/rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp
     const [price, setPrice] = useState(0);
 
     const getCoinPrice = async() => {
@@ -41,6 +42,9 @@ const Main = () => {
         });
         console.log(balanceResponse)
         setAmount(balanceResponse.balances[0].amount);
+        RNSecureKeyStore.set('balance', balanceResponse.balances[0].amount, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY} ).then((item) => {
+            console.log('성공');
+        });
         getCoinPrice();
     }
 
@@ -104,7 +108,7 @@ const Main = () => {
                            new Array(10).fill(undefined).map((val,idx) => {
                                 return(            
                                     <TouchableOpacity>
-                                        <View style={styles.list_box}><Text>{idx}</Text></View>
+                                        <View key ={idx} style={styles.list_box}><Text>{idx}</Text></View>
                                 </TouchableOpacity>
                                 )
                             })

@@ -1,13 +1,18 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase, Linking} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import Topbar from '../../Components/Topbar';
-
+// import Moment from 'react-moment';
+//import moment from 'moment';
+import moment from "moment-timezone"
+//import {moment as timezone}  from 'moment-timezone';
+// timezone.tz.setDefault("Asia/Seoul")
+import {WebView} from 'react-native-webview';
 const Main = () => {
   
     const navigation = useNavigation();
@@ -24,6 +29,25 @@ const Main = () => {
     const [add, setAdd] = useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
     //http://seed-2.testnet.rizon.world:1317/cosmos/bank/v1beta1/balances/rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp
     const [price, setPrice] = useState(0);
+    const [txInfo, setTxInfo] = useState([]);
+
+
+
+    const getTxInfo = async(address) => {
+        const txAPI = `https://api-rizon-testnet.cosmostation.io/v1/account/new_txs/${address}?limit=100`
+        let txInfoArray = await fetch(txAPI).then(res => {
+            return res.json();
+        })
+        console.log(txInfoArray[0].data.timestamp);
+        // console.log(txInfoArray);
+        var date = new Date(txInfoArray[0].data.timestamp);
+        console.log(date);
+        console.log(
+          date.getFullYear()+'.'+(date.getMonth()+1)+'.'+date.getDate()
+          + " "+date.getHours()+":"+date.getMinutes()
+        )
+        setTxInfo(txInfoArray);
+    }
 
     const getCoinPrice = async() => {
         const atoloPriceAPI = `https://api.bithumb.com/public/ticker/atolo_KRW`
@@ -48,10 +72,25 @@ const Main = () => {
         getCoinPrice();
     }
 
+    const txInfoComponent = ()=> {
+        return(
+            <TouchableOpacity>
+            {txInfo.map((item, idx) => {
+                return(
+                <View key ={idx} style={styles.list_box}><Text>{item.data.timestamp}</Text></View>
+                )
+            })}
+            
+             </TouchableOpacity>
+        )
+    }
+
+
     useEffect(() => {
         //더미데이터
         getCoinInfo('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
         setAdd('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
+        getTxInfo('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
         // RNSecureKeyStore.get("mnemonic")
 	    // .then((mnemonic) => {
         //     setMnemonic(mnemonic);
@@ -85,10 +124,10 @@ const Main = () => {
                     <Image style = {styles.coin_img} source={require('../../assets/images/logo.png')} />
                     <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
                         <View>
-                        <Text style = {styles.txt_title}>{amount.toString().replace(/\B(?=(\d{6})+(?!\d))/g, '.')}</Text>
+                        <Text style = {styles.txt_title}>{(amount/1000000).toString()}</Text>
                         {/* <Text style = {styles.txt_subtitle}>{Number(price)*Number(amount.toString().replace(/\B(?=(\d{6})+(?!\d))/g, '.'))} KRW</Text> */}
                        
-                        <Text style = {styles.txt_subtitle}>{(Number(price)*Number(amount.toString().replace(/\B(?=(\d{6})+(?!\d))/g, '.'))).toFixed(4)} KRW</Text>
+                        <Text style = {styles.txt_subtitle}>{(price*(amount/1000000)).toFixed(4).toString()} KRW</Text>
                         </View>
                         {/* 리로드 */}
                         <TouchableOpacity style = {styles.reload} onPress={() => getCoinInfo(add)}>
@@ -101,18 +140,55 @@ const Main = () => {
                     <Text style = {styles.confirm_txt}>{t('msg3')}</Text>
                     </TouchableOpacity>
                 </View>
-                
                 <ScrollView style={styles.list_box_container}>
-                    <Text style = {styles.title_text}>History</Text>
-                        {
-                           new Array(10).fill(undefined).map((val,idx) => {
-                                return(            
-                                    <TouchableOpacity>
-                                        <View key ={idx} style={styles.list_box}><Text>{idx}</Text></View>
-                                </TouchableOpacity>
-                                )
-                            })
-                        }
+                    <Text style = {styles.title_text}>History</Text>    
+                               {/* {txInfoComponent()} */}
+                                    {/* <TouchableOpacity> */}
+                                        {txInfo.map((item, idx) => {
+                                            //   var date = new Date(item.header.timestamp);
+                                            //   const nowTime = moment(item.header.timestamp).format('YYYY-MM-DD HH:mm:ss');
+                                          //  const nowTime = moment(item.header.timestamp).format('YYYY-MM-DD HH:mm:ss');
+                                            return(
+                                            <TouchableOpacity key ={idx} style={styles.list_box} onPress={() => Linking.openURL(`https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}`)   
+                                            // return(
+                                            //     <View style={{flex: 1}}>
+                                            // <WebView
+                                            //     // source={{ uri: `https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}` }}
+                                            //     source={{ uri: 'https://www.naver.com' }} 
+                                            //     style={{ marginTop: 20 }}
+                                            //   />
+                                            //   </View>
+                                            // )
+                                            }>
+                                                <Text style={{color: '#fff'}}>
+                                                {/* {date.getFullYear()+'.'+(date.getMonth()+1)+'.'+date.getDate()
+                                                + " "+date.getHours()+":"+date.getMinutes()} */}
+                                                {
+                                                    moment(item.header.timestamp).tz('Asia/Seoul').format('YYYY.MM.DD HH:mm:ss')
+                                                }
+                                                </Text>
+                                              
+                                                {item.data.tx.body.messages[0].from_address === add ?
+                                                <Text style={{color: 'red'}}>To</Text>: 
+                                                <Text style={{color: 'blue'}}>From</Text>
+                                                }
+                                                <Text style={{color: '#fff'}}>
+                                                {item.data.tx.body.messages[0].from_address === add ?
+                                                  `${item.data.tx.body.messages[0].to_address}`
+                                                : `${item.data.tx.body.messages[0].from_address}`
+                                                }
+                                                </Text>
+                                                <Text style={{color: '#fff'}}>
+                                                {item.data.tx.body.messages[0].amount[0].amount/1000000} atolo
+                                                </Text>
+                                                {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>실패</Text>: null}
+                                            
+
+                                                </TouchableOpacity>
+                                            )
+                                        })}
+                                        
+                                {/* </TouchableOpacity> */}
                 </ScrollView>
             </View>
             </ImageBackground>
@@ -180,7 +256,7 @@ const styles = StyleSheet.create({
     },
     word:{
         color: '#fff',
-        fontSize: 20
+        fontSize: 22
     }, 
     confirmBtn: {
         marginTop: 15,
@@ -205,7 +281,7 @@ const styles = StyleSheet.create({
     },
     list_box: {
         width: 350,
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         borderRadius: 5,
         marginTop: 15,
         padding: 20,

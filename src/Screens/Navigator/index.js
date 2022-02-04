@@ -17,16 +17,20 @@ import {Provider as ReduxProvider} from 'react-redux';
 import { makeStore } from '../../store/store';
 import Topbar from '../../Components/Topbar';
 import Settings from '../../Screens/Settings'
+import SettingPincode from '../../Screens/Settings/SettingPincode'
+import SendPincode from '../Main/SendPincode';
+
+
+/* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */
 const Navigator = () => {
 
   const store = makeStore();
   const Stack = createNativeStackNavigator ();
   return (
-    <ReduxProvider store ={store}>
-    <NavigationContainer>
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+        <ReduxProvider store ={store}>
+        <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name = "Home" component = {Home}/>
-        {/* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */}
         <Stack.Screen name = "Pincode" component = {Pincode}/>
         <Stack.Screen name = "PincodeConfirm" component = {PincodeConfirm}/>
         <Stack.Screen name = "MnemonicInfo" component = {MnemonicInfo}/>
@@ -38,10 +42,12 @@ const Navigator = () => {
         <Stack.Screen name = "SendAddress" component = {SendAddress}/>
         <Stack.Screen name = "SendInput" component = {SendInput}/>
         <Stack.Screen name = "SendInfo" component = {SendInfo}/>
+        <Stack.Screen name = "SendPincode" component = {SendPincode}/>
         <Stack.Screen name = "Settings" component = {Settings}/>
-    </Stack.Navigator>
-    </NavigationContainer>
-    </ReduxProvider>
+        <Stack.Screen name = "SettingPincode" component = {SettingPincode}/>
+        </Stack.Navigator>
+        </NavigationContainer>
+        </ReduxProvider>
     )
 };
 

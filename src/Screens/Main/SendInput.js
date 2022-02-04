@@ -8,62 +8,129 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { useDispatch } from 'react-redux';
 import { sendInfo } from '../../store/actions'
+import { onChange } from 'react-native-reanimated';
 
 const SendInput = () => {
 
     const [send_amount, setAmount] = useState(0); // 내가 보낼 수량
-    const [charge, setCharge] = useState(0); //내가 보낼 수량 - 수수료
+    const [charge, setCharge] = useState(''); //내가 보낼 수량 - 수수료
     const [balance, setBalance] = useState(0); // 보유 수량
     const [maxAmount, setMaxAmount] =useState(0); //최대 보유 수량 - 수수료
-    // const [feeValue, setFeeValue] = useState(0.05); //수수료
     const [send_fee, setFee] = useState(0.05); //수수료
     const [send_memo, setMemo] = useState(''); //메모
+    
+    const dispatch = useDispatch();
+
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('SendInfo'),[]) 
 
     useEffect(() => {
-
         RNSecureKeyStore.get('balance').then((item) => {
-            setBalance(Number(item));
-            setMaxAmount(Number(item)-(send_fee*1000000));
+            console.log('내 보유 수량', balance)
+            setBalance(parseInt(item));
+            console.log('보유수량 - 수수료', parseInt(item)-(send_fee*100000));
+            setMaxAmount(parseInt(item)-(send_fee*100000)); 
         })
     },[]);
 
- 
-
-
     useEffect(()=> {
-        // console.log(send_fee/10);
-        // console.log(send_fee, send_amount)
-
+        setMaxAmount(parseInt(balance)-(send_fee*100000)); 
+        //수수료 최소값 제한
         if(send_fee < 0.005){
-            Alert.alert('수수료는 최소값(0.025)이상을 입금해야 합니다.');
-            setFee(0.005); //최소값 setting
+            Alert.alert('수수료는 최소값(0.005)이상을 입금해야 합니다.');
+            setFee(0.005);
+
         }
 
-        if(send_amount !== 0){
-                if(send_amount === maxAmount){
-                    send_amount> balance ? Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(balance-(send_fee*100000));
-                }else{ 
-                    // send_amount+send_fee*100000> balance ?  Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(send_amount-(send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.'); 
-                    if(send_amount+send_fee*100000> balance){
-                        Alert.alert('최대 수량이상을 입금할 수 없습니다.');
-                        setAmount(0);
-                      }else{
-                            setCharge(send_amount-(send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.'); 
-                
-                        }
-                    }
+        
+        if(send_amount.toString().indexOf(".") !== -1){
+            let afterStr = send_amount.toString().split('.');
+            console.log(afterStr[0]);
+            console.log(afterStr[1]);
+            if(afterStr[0].length > 5){
+                Alert.alert('6자리 이상으로 사용X')
+                setAmount((prev) => prev)
+            }else if(afterStr[1].length > 5){
+                Alert.alert('6자리 이상으로 사용X')
+                setAmount((prev) => prev)
+            }
+        }else{
+            send_amount.toString().length > 5 &&  Alert.alert('6자리 이상으로 사용X')
+        }
+        
+        // if(send_amount.length > 5){
             
-          
-        }
-     
-    },[send_amount, send_fee]);
-    const dispatch = useDispatch();
-
+        //     let afterStr = send_amount.toString().split('.');
+        //     console.log(afterStr);
+        //     if(afterStr[0].length > 5){
+        //         Alert.alert('6자리 이상으로 사용X')
+        //         setAmount((prev) => prev)
+        //     }else if(afterStr[1].length > 6){
+        //         Alert.alert('6자리 이상으로 사용X')
+        //         setAmount((prev) => prev)
+        //     }else{
+        //         Alert.alert('6자리 이상으로 사용X')
+        //         setAmount((prev) => prev)
+        //     }
+        // }
+      
     
+      
+            if((parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)> maxAmount){
+                Alert.alert('최대 수량이상을 입금할 수 없습니다.');
+                setAmount(0);
+            }else{
+                setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
+            }
+    
+
+
+        /*
+        if(send_amount !== 0){ 
+                //보내는 수량이 최대값이라면
+            if(send_amount === maxAmount){ 
+                // send_amount> balance ? Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(balance-(send_fee*100000));
+                // send_amount> balance ? Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(((balance-(send_fee*100000))).toString());
+                setCharge(balance-(send_fee*100000))
+            }else{ 
+                if(send_amount+(send_fee*100000)> balance){
+                    Alert.alert('최대 수량이상을 입금할 수 없습니다.');
+                    setAmount(0);
+                }else{
+                    setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
+                }
+            }
+        }
+        */
+    },[send_amount, send_fee, charge]);
+
+    const onChange = (num) => {
+        switch (num) {
+            case '0.1':
+                //(Math.round((a + b) * 10) / 10)
+                //atolo -> 6자리 제한 가능
+              setAmount((prev) => (parseFloat(prev)*1000000 + 0.1*1000000)/1000000);
+            //   parseInt(send_amount)/1000000
+              break;
+            case '1':
+                setAmount((prev) => (parseInt(prev)+1));
+              break;
+            case '10':
+                setAmount((prev) => (parseInt(prev)+10));
+                break;
+            case 'half':
+                setAmount((maxAmount/2)/1000000)
+                break;
+            case 'max':
+                setAmount(maxAmount/1000000)
+                break;    
+            default:
+              0;
+          }
+    }
+
+    // 송금 확인 페이지 이동(유효성)
     const onNext = () => { 
-        console.log('onNext 함수 확인')
         if(send_amount === 0){
             Alert.alert('보낼 수량을 입력해주세요.');
         }else if(send_fee === 0){
@@ -73,17 +140,15 @@ const SendInput = () => {
             goRight();
         }
     }
-    return (
 
-    
+
+    return (
         <ImageBackground style ={styles.image_bg} source ={BG}>
-        <KeyboardAvoidingView
-  keyboardVerticalOffset = {-600} // adjust the value here if you need more padding
-  behavior={Platform.OS === "ios" ? "padding" : null} 
-  style = {styles.container}>
-    
+            <KeyboardAvoidingView
+                keyboardVerticalOffset = {-600} // adjust the value here if you need more padding
+                behavior={Platform.OS === "ios" ? "padding" : null} 
+                style = {styles.container}>
         <ScrollView >
-        {/* <KeyboardAvoidingView   style = {styles.container}   keyboardVerticalOffset={500} > */}
               <Topbar logo={true}/>
                 <View style = {styles.content} >
                 <View style = {styles.progress_wrapper}>
@@ -94,36 +159,78 @@ const SendInput = () => {
                     <View style = {styles.progress_bar}></View>                
                 </View>
                 <View>
-                    <Text style = {styles.txt_subtitle}>최대 전송 가능 수량: {balance/1000000}</Text>
+                <Text style = {styles.txt_subtitle}>전송할 토큰의 수량</Text>
+                    {/* <Text style = {styles.txt_subtitle}>최대 전송 가능 수량: {balance}</Text> */}
                 </View>
                 <View style = {styles.amount_wrapper}>
                     <View style={{ justifyContent: 'center' , alignItems:'center', flexDirection: 'row'}}>
                     <TextInput style={styles.word}
                     // multiline={true}
-                    placeholder={send_amount === 0?  '보낼 수량을 입력하세요.': ''}
+                    // placeholder={send_amount === 0?  '보낼 수량을 입력하세요.': ''}
                     placeholderTextColor = "#CECECE"
-                    onChangeText={(text) => setAmount(parseFloat(text))}
-                    keyboardType="number-pad"
+                    // onChangeText={(text) => setCharge((text))}
+                    keyboardType="numeric"
                     // onEndEditing = {() => setIsFocusAmount(false)}
                     // onFocus= {() =>setIsFocusAmount(true)}
-                    value={send_amount !== 0&& (charge/1000000).toString()}
+                    // value={send_amount !== 0 && (charge/1000000).toString()}
+                  
+                    onChangeText={(num) => {
+                        //  let check = num.replace('.','');
+                        let check =num.replace(/(^0+)/, ""); 
+                        if(check[0] === '.'){
+                            check = check.substring(1, check.length)
+                        }
+                         num === ''? setAmount(0):setAmount(check);
+                         //num === ''? setAmount(0):onChange(num);
+                    }}
+                    //value={(charge/1000000).toString()}.
+                    //value={(send_amount).toString().replace(/\B(?=(\d{6})+(?!\d))/g, ".")}
+                    value={ send_amount.toString()}
+                 
+                    // value={'1000000000000000000000000'.toString().replace(/\B(?=(\d{6})+(?!\d))/g, ".")}
                     //value={send_amount !== 0&&send_amount.toString()}
                     />
+                    
                     </View>
                     
                 </View>
+                {/* <Text style = {[styles.word,{
+                    textAlign:'right', paddingRight: 15, paddingBottom:10
+                }]}>전송 수량(수량 - 수수료) : {send_amount === 0? '0': parseInt(send_amount)/1000000}</Text>
+                <Text style = {[styles.word,{
+                    textAlign:'right', paddingRight: 15, paddingBottom:10
+                }]}>최대 전송 가능 수량(보유량- 수수료): {maxAmount/1000000}</Text>
                 <View style = {styles.amount_btn_wrapper}>
                     <TouchableOpacity style = {styles.amount_btn} 
-                    onPress={()=> setAmount((prev) => prev+1000000)}><Text style={{color: '#fff'}}>+ 1</Text></TouchableOpacity>
+                    onPress={()=> setAmount((prev) => (parseInt(prev)+100000).toString())}><Text style={{color: '#fff'}}>+ 0.1</Text></TouchableOpacity>
                     <TouchableOpacity style = {styles.amount_btn} 
-                    onPress={()=> setAmount((prev) =>prev+10000000)}
-                    ><Text style={{color: '#fff'}}>+ 10</Text></TouchableOpacity>
+                    onPress={()=> setAmount((prev) => (parseInt(prev)+1000000).toString())}
+                    ><Text style={{color: '#fff'}}>+ 1</Text></TouchableOpacity>
                     <TouchableOpacity style = {styles.amount_btn}
-                      onPress={()=> setAmount((prev) =>prev+100000000)}><Text style={{color: '#fff'}}>+ 100</Text></TouchableOpacity>    
+                      onPress={()=> setAmount((prev) => (parseInt(prev)+10000000).toString())}><Text style={{color: '#fff'}}>+ 10</Text></TouchableOpacity>    
                     <TouchableOpacity style = {styles.amount_btn}
                      onPress={()=> setAmount(maxAmount/2)}><Text style={{color: '#fff'}}>절반</Text></TouchableOpacity>    
                      <TouchableOpacity style = {styles.amount_btn}
                     onPress={()=> setAmount(maxAmount)}><Text style={{color: '#fff'}}>최대</Text></TouchableOpacity>               
+                </View> */}
+                  <Text style = {[styles.word,{
+                    textAlign:'right', paddingRight: 15, paddingBottom:10
+                }]}>전송 수량(수량 - 수수료) : {send_amount === 0 ? '0': (parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)/1000000}</Text>
+                <Text style = {[styles.word,{
+                    textAlign:'right', paddingRight: 15, paddingBottom:10
+                }]}>최대 전송 가능 수량(보유량- 수수료): {maxAmount/1000000}</Text>
+                <View style = {styles.amount_btn_wrapper}>
+                    <TouchableOpacity style = {styles.amount_btn} 
+                    onPress={()=> onChange('0.1')}><Text style={{color: '#fff'}}>+ 0.1</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.amount_btn} 
+                    onPress={()=> onChange('1')}
+                    ><Text style={{color: '#fff'}}>+ 1</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.amount_btn}
+                      onPress={()=> onChange('10')}><Text style={{color: '#fff'}}>+ 10</Text></TouchableOpacity>    
+                    <TouchableOpacity style = {styles.amount_btn}
+                     onPress={()=>  onChange('half')}><Text style={{color: '#fff'}}>절반</Text></TouchableOpacity>    
+                     <TouchableOpacity style = {styles.amount_btn}
+                    onPress={()=>  onChange('max')}><Text style={{color: '#fff'}}>최대</Text></TouchableOpacity>               
                 </View>
                 <View>
                     <Text style = {styles.txt_subtitle}>수수료</Text>
@@ -137,16 +244,11 @@ const SendInput = () => {
                     placeholder={send_fee.toString()}
                     placeholderTextColor = "#fff"
                     onChangeText={(text) => setFee(parseFloat(text))}
-                    keyboardType="parseFloat-pad"
+                    keyboardType="number-pad"
                     value={send_fee.toString()}
                     />
                      <Text style = {styles.word}>atolo</Text>
                     </View>
-                {/* <Text style={{color: '#fff', marginLeft: 10}}>=</Text>
-                <View style={{width: 120, alignItems: 'center'}}>
-                <Text style ={{color: '#fff',  fontSize: 18}}>{send_fee/10} atolo</Text> */}
-                {/* <Text style ={{color: '#fff',   fontSize: 18}}>atolo</Text> */}
-                {/* </View> */}
                 <View style = {styles.amount_btn_wrapper}>
                     <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.005)}><Text style={{color: '#fff'}}>최소</Text></TouchableOpacity>
                     <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.01)}><Text style={{color: '#fff'}}>낮음</Text></TouchableOpacity>

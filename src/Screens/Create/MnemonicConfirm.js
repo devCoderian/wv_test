@@ -27,7 +27,7 @@ const MnemonicConfirm = () => {
         RNSecureKeyStore.get("mnemonic")
 	    .then((res) => {
             // setWord(res.split(' '));
-            console.log(res);
+            // console.log(res);
             let wordList = res.split(" ");
             setWords(wordList);
             setRandomWords([...wordList].sort(()=> Math.random() -0.5));

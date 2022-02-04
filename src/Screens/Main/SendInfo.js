@@ -40,50 +40,6 @@ const SendInfo = () => {
       
     })
 
-    const goRight = useCallback(() => {
-        //통신 성공 여부
-        const chainId = "groot-14";
-        const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
-        rizon.setBech32MainPrefix("rizon");
-        rizon.setPath("m/44'/118'/0'/0/0");
-        const address = rizon.getAddress('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
-        const ecpairPriv = rizon.getECPairPriv('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
-       
-        console.log(address);
-        rizon.getAccounts(address).then(data => {
-            let stdSignMsg = rizon.newStdMsg({
-                msgs: [
-                    {
-                        type: "cosmos-sdk/MsgSend",
-                        value: {
-                            amount: [
-                                {
-                                    amount: String(send_amount), 	// 6 decimal places (1000000 uatolo = 1 ATOLO)
-                                    denom: "uatolo"
-                                }
-                            ],
-                            from_address: address,
-                            to_address: "rizon10pqkrq4feec3f6c6unyjhh5rnwnsstq3l38k0d"
-                            // to_address: "rizon1rt8u24lxw4hqxecq0gcf7jf99e25kpw2x7yprm"
-                        }
-                    }
-                ],
-                chain_id: chainId,
-                //fee: { amount: [ { amount: String(3), denom: "uatolo" } ], gas: String(100000) },
-                fee: { amount: [ { amount: String(send_fee*1000000), denom: "uatolo" } ], gas: String(100000) },
-                memo: send_memo,
-                account_number: String(data.account.account_number),
-                sequence: String(data.account.sequence)
-            });
-        
-            const signedTx = rizon.sign(stdSignMsg, ecpairPriv);
-            rizon.broadcast(signedTx).then(response => console.log(response));
-        })
-
-        // useDispatch(removeAddress());
-        // navigation.navigate('Main')
-    },[]) 
-
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -134,7 +90,7 @@ const SendInfo = () => {
                         <Text style = {styles.txt_subtitle}>{send_address}</Text>
                 </View>
                 <View style={{justifyContent: 'center'}}>
-                    <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
+                    <TouchableOpacity style = {styles.confirmBtn} onPress={()=> navigation.navigate('SendPincode')}>
                     <Text style = {styles.confirm_txt}>송금하기</Text>
                     {/* <Icon name = 'Home' size={20} color='#fff' /> */}
                     </TouchableOpacity>

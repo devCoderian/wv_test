@@ -3,8 +3,8 @@ const initialState = {
     amount: '',
     send_address: '',
     sendInfo: {
-        send_amount: '',
-        send_fee: '', 
+        send_amount: 0,
+        send_fee: 0, 
         send_memo: '',
     }   
 }

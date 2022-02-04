@@ -28,24 +28,6 @@ const RestorePincode = () => {
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
 
-  
-    const makeAddress = (mnemonic) => {
-        const chainId = "groot-14";
-        const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
-        rizon.setBech32MainPrefix("rizon");
-        rizon.setPath("m/44'/118'/0'/0/0");
-        const address = rizon.getAddress(mnemonic);
-        const ecpairPriv = rizon.getECPairPriv(mnemonic);
-        console.log(ecpairPriv);
-        goRight(); 
-        // RNSecureKeyStore.set("address", address, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        // .then(()=> {
-        //        goRight(); 
-        // });
-      
-      
-    }
-
     const makeSecureKey = async (code) => {
       
         const pincode = code.join('');

@@ -1,17 +1,46 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 , {wordlists} from 'react-native-bip39';
-
+import bip39 from 'react-native-bip39';
 import rizonjs from '../../../rizonjs/dist/rizon'
+import { useSelector, useDispatch } from 'react-redux';
+import { removeAddress } from '../../store/actions'
 
-const PincodeConfirm = () => {
+const SendPincode = () => {
+    
+    //보낼때 성공하면 꼭 초기화 해주기!!!!!!!
+    const send_address = useSelector((state) => state.send_address);
+    const [privkey, setPriveKey] =useState('');
+    // const [address, setAddress] =useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
+    const [balance, setBalance] = useState('')
+    const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
+   
+    useEffect(()=> {
+        // RNSecureKeyStore.get('address').then((item) => {
+        //     setAddress(item);
+        //     console.log('address', item)
+        // });
+     
+        // RNSecureKeyStore.get('privkey').then((item) => {
+        //     setPriveKey(item);
+        //     console.log('privkey', item)
+        // });
+
+        console.log('send_amount', send_amount);
+        console.log('send_fee',send_fee);
+        RNSecureKeyStore.get('balance').then((balance) => {
+            setBalance(balance);
+            console.log('balance', balance)
+        });
+        
+   
+      
+    })
 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('MnemonicInfo'),[]);
 
     let numberId = [
         {id: 1},
@@ -29,28 +58,58 @@ const PincodeConfirm = () => {
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
 
-  
-    const makeAddress = (mnemonic) => {
+    const goRight = useCallback(() => {
+        //통신 성공 여부
         const chainId = "groot-14";
         const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
         rizon.setBech32MainPrefix("rizon");
         rizon.setPath("m/44'/118'/0'/0/0");
-        const address = rizon.getAddress(mnemonic);
-        const ecpairPriv = rizon.getECPairPriv(mnemonic);
-        // console.log(ecpairPriv);
-        // console.log(ecpairPriv.toString('hex'));
-        // goRight(); 
-        RNSecureKeyStore.set("address", address, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        .then(()=> {
-            RNSecureKeyStore.set("privkey", ecpairPriv.toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-            .then(()=> {
-                //wordlists -> 니모닉 단어 리스트 불러오기(wordlists)
-                //goRight(); 
+        const address = rizon.getAddress('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
+        const ecpairPriv = rizon.getECPairPriv('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
+       
+        console.log(address);
+        rizon.getAccounts(address).then(data => {
+            let stdSignMsg = rizon.newStdMsg({
+                msgs: [
+                    {
+                        type: "cosmos-sdk/MsgSend",
+                        value: {
+                            amount: [
+                                {
+                                    amount: String(send_amount), 	// 6 decimal places (1000000 uatolo = 1 ATOLO)
+                                    denom: "uatolo"
+                                }
+                            ],
+                            from_address: address,
+                            to_address: "rizon10pqkrq4feec3f6c6unyjhh5rnwnsstq3l38k0d"
+                            // to_address: "rizon1rt8u24lxw4hqxecq0gcf7jf99e25kpw2x7yprm"
+                        }
+                    }
+                ],
+                chain_id: chainId,
+                //fee: { amount: [ { amount: String(3), denom: "uatolo" } ], gas: String(100000) },
+                fee: { amount: [ { amount: String(send_fee*1000000), denom: "uatolo" } ], gas: String(100000) },
+                memo: send_memo,
+                account_number: String(data.account.account_number),
+                sequence: String(data.account.sequence)
             });
-        });
-        // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
-      
-    }
+        
+            const signedTx = rizon.sign(stdSignMsg, ecpairPriv);
+           
+            rizon.broadcast(signedTx).then(() => {
+                try {
+                    console.log('송금 성공 모달 안 Main 넣가')
+                    navigation.navigate('Main');
+                } catch (error) {
+                    
+                }
+            });
+        })
+
+        // useDispatch(removeAddress());
+
+    },[]) 
+
 
     const makeSecureKey = async (code) => {
       
@@ -63,16 +122,7 @@ const PincodeConfirm = () => {
 		    console.log(res);
             if(pincode === res){
                 console.log('일치, 니모닉 화면으로 넘어가기');
-                // let check = bip39.generateMnemonic();
-                // console.log(check);
-                bip39.generateMnemonic(256).then(mnemonic => {
-                    RNSecureKeyStore.set("mnemonic", mnemonic , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-                    .then(() => {
-                        makeAddress(mnemonic);
-                    }, (err) => {
-                        console.log(err);
-                    });
-                  });
+               
             }else{
                 console.log('불일치 이전 페이지 확인..??')
             }
@@ -81,6 +131,9 @@ const PincodeConfirm = () => {
 	    });
      
     }
+
+
+
 
     const onPressNum = (id) => {
    
@@ -91,6 +144,8 @@ const PincodeConfirm = () => {
                 code[i] = id;
                 setPincode(code);
                 if(i === 3){
+                    // code[i] = id;
+                     // RNSecureKeyStore.set(pincode);
                     // 4 되면  securestorage 저장 
                     makeSecureKey(code);
                     
@@ -100,6 +155,9 @@ const PincodeConfirm = () => {
                 continue;
             }
         }
+
+        
+        console.warn(code);
     }
 
     const onDelete = () => {
@@ -116,6 +174,7 @@ const PincodeConfirm = () => {
                 continue;
             }
         }
+        console.warn(code);
         setPincode(code);
     }
 
@@ -129,16 +188,16 @@ const PincodeConfirm = () => {
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
-                        pincode.map((item, idx) => {
+                        pincode.map(item => {
                             let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
-                            return <View key = {idx} style= {style}></View>
+                            return <View style= {style}></View>
                         })
                     }
                 </View>
                 <View style = {styles.number_container}>
-                    {number.map((item)=>{
+                    {number.map((item, idx)=>{
                         return(
-                            <TouchableOpacity key={item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                            <TouchableOpacity key={idx} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
                                 <Text style = {styles.number}>{item.id}</Text>
                             </TouchableOpacity>
                         )
@@ -173,14 +232,14 @@ const styles = StyleSheet.create({
     },
     txt_title: {
         width: 250,
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '500',
-        lineHeight: 35,
+        lineHeight: 58,
         textAlign: 'center',
         color: '#000',
     },
     txt_subtitle: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '400',
         lineHeight: 21, 
         color: '#000'
@@ -203,7 +262,7 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.45,
+        shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
     },
@@ -217,8 +276,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         shadowColor: "#000",
         shadowOffset: {
-	        width: 0,
-	        height: 2,
+	    width: 0,
+	    height: 2,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -227,21 +286,21 @@ const styles = StyleSheet.create({
     number_container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 115,
-        width: 300,
+        marginTop: 90,
+        width: 280,
         height: 348,
         alignItems: 'center',
         justifyContent: 'center'
     },
     number_pad:{
-        width: 80,
-        height: 80,
-        borderRadius: 80,
+        width: 75,
+        height: 75,
+        borderRadius: 75,
         justifyContent: 'center',
         alignItems:'center',
         backgroundColor: 'rgba(225, 255, 255, 0.2)',
-        marginHorizontal: 10,
-        marginVertical: 8
+        marginHorizontal: 9,
+        marginVertical: 7
     },
     number:{
         color: '#fff',
@@ -254,4 +313,4 @@ const styles = StyleSheet.create({
     }
     });
 
-export default PincodeConfirm;
+export default SendPincode;

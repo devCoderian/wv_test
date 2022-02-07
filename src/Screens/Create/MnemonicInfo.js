@@ -41,8 +41,8 @@ const MnemonicInfo  = () => {
                     {word.map((item, idx) => {
                         return(
                             <>
-                         <View key={idx} style= {[styles.word_wrapper]}>
-                            <Text style = {[styles.word]}>{item}</Text>
+                         <View key={item.id} style= {[styles.word_wrapper]}>
+                            <Text key = {item.id} style = {[styles.word]}>{item}</Text>
                         </View>
                         </>
                         )

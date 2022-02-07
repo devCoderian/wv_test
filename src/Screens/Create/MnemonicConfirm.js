@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import {Button, SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, ImageBackground,StyleSheet  } from 'react-native'
 // import Svg, { Path } from 'react-native-svg';
-// import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { Paragraph, Dialog, Portal, Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
@@ -38,8 +38,8 @@ const MnemonicConfirm = () => {
    
     useEffect(() => {
         //통과 여부 체크하기
-        //num === 24 && navigation.navigate('Success');
-        navigation.navigate('Success');
+        num === 12 && navigation.navigate('Main');
+        //navigation.navigate('Main');
     }, [num]);
     useEffect(() => {
         //통과 여부 체크하기
@@ -85,8 +85,8 @@ const MnemonicConfirm = () => {
                     {randomWords.map((item, idx) => {
                         return(
                             <>
-                         <TouchableOpacity key={idx} style= {[styles.word_wrapper]} onPress={()=> isOrder(idx)}>
-                            <Text style = {[styles.word]} >{item}</Text>
+                         <TouchableOpacity key={item.id} style= {[styles.word_wrapper]} onPress={()=> isOrder(idx)}>
+                            <Text key = {item.id} style = {[styles.word]} >{item}</Text>
                         </TouchableOpacity>
                         </>
                         )

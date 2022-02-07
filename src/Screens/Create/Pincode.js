@@ -25,15 +25,9 @@ const Pincode = () => {
     ]
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
-    const navi = () => {
-        console.log('이동');
-    }
-
    
     const makeSecureKey = async (code) => {
-        
         const pincode = code.join('');
-        console.log('pincode', pincode);
         RNSecureKeyStore.set("pincode", pincode , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
         .then((res) => {
             console.log(res);
@@ -50,19 +44,7 @@ const Pincode = () => {
             if(code[i] === ''){
                 code[i] = id;
                 setPincode(code);
-                if(i === 3){
-                    // code[i] = id;
-                    // 코드 
-                    makeSecureKey(code);
-                   
-                }
-                break;
-            }else{
-               
-                    // RNSecureKeyStore.set(pincode);
-                    // 4 되면  securestorage 저장 
-                    // 다음 화면으로 넘기기
-                continue;
+                i === 3 && makeSecureKey(code);   
             }
         }
     }
@@ -70,12 +52,9 @@ const Pincode = () => {
     const onDelete = () => {
         
         let code = [...pincode];
-      
         for(let i = code.length-1; i >= 0; i--){
-            console.log('code[i]', i, code[i])
             if(code[i] !== ''){
                 code[i] = ''
-                console.log('code[i]', i, code[i])
                 break;
             }else{
                 continue;

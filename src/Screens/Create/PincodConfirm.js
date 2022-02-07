@@ -30,22 +30,24 @@ const PincodeConfirm = () => {
     const [number, setNumber]  = useState(numberId);
 
   
-    const makeAddress = (mnemonic) => {
+    const makeAddress = async(mnemonic) => {
+        
         const chainId = "groot-14";
         const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
         rizon.setBech32MainPrefix("rizon");
         rizon.setPath("m/44'/118'/0'/0/0");
-        const address = rizon.getAddress(mnemonic);
-        const ecpairPriv = rizon.getECPairPriv(mnemonic);
-        // console.log(ecpairPriv);
+        //const address = rizon.getAddress(mnemonic);
+        //const ecpairPriv = rizon.getECPairPriv(mnemonic);
+        //console.log(ecpairPriv);
+        // console.log(address);
         // console.log(ecpairPriv.toString('hex'));
         // goRight(); 
-        RNSecureKeyStore.set("address", address, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        RNSecureKeyStore.set("address", rizon.getAddress(mnemonic), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
         .then(()=> {
-            RNSecureKeyStore.set("privkey", ecpairPriv.toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+            RNSecureKeyStore.set("privkey", rizon.getECPairPriv(mnemonic).toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
             .then(()=> {
                 //wordlists -> 니모닉 단어 리스트 불러오기(wordlists)
-                //goRight(); 
+                goRight(); 
             });
         });
         // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
@@ -56,19 +58,18 @@ const PincodeConfirm = () => {
       
         const pincode = code.join('');
         console.log('pincode', pincode);
-       
+        // let mnemonic = ''; 
         //testPincode => 복구 끝나면 pincode로 변경하기
-        RNSecureKeyStore.get("pincode")
-	    .then((res) => {
-		    console.log(res);
+        RNSecureKeyStore.get("pincode").then((res) => {
             if(pincode === res){
                 console.log('일치, 니모닉 화면으로 넘어가기');
                 // let check = bip39.generateMnemonic();
                 // console.log(check);
-                bip39.generateMnemonic(256).then(mnemonic => {
-                    RNSecureKeyStore.set("mnemonic", mnemonic , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+                bip39.generateMnemonic().then((res) => {
+                    RNSecureKeyStore.set("mnemonic", res , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
                     .then(() => {
-                        makeAddress(mnemonic);
+                        console.log('mnemonic',res);
+                        makeAddress(res);
                     }, (err) => {
                         console.log(err);
                     });

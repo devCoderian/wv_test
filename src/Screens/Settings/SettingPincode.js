@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView, Alert} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 //pincode 저장 라이브러리
@@ -57,8 +57,27 @@ const SettingPincode = () => {
     ]
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
+    const [falseCount, setFalseCount] = useState(0);
 
+    const checkFalseCount = () => {
+     
+        setFalseCount((prev) => prev+1);
+    }
 
+useEffect(()=> {
+    if(falseCount > 0){
+        setPincode(['', '', '', '']);
+        Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
+    } 
+    if(falseCount === 3){
+        Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
+        navigation.navigate('Settings', {
+            checkRoute: false,
+          });
+        console.log('불일치 이전 페이지 확인..??')   
+    }
+},[falseCount]);
+ 
     const makeSecureKey = async (code) => {
       
         const pincode = code.join('');
@@ -76,10 +95,7 @@ const SettingPincode = () => {
                 console.log('일치, 니모닉 화면으로 넘어가기');
                
             }else{
-                navigation.navigate('Settings', {
-                    checkRoute: false,
-                  });
-                console.log('불일치 이전 페이지 확인..??')
+                setFalseCount((prev) => prev+1);
             }
 	    }, (err) => {
 		    console.log(err);

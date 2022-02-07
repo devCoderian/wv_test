@@ -18,6 +18,8 @@ const Setting = ({ route }) => {
   
     console.log(route.params);
     const [expanded, setExpanded] = useState(false);
+    const [isExpended, setIsExpended] = useState(false);
+
     useEffect(()=>{
         if(route.params !== undefined){
             
@@ -25,11 +27,16 @@ const Setting = ({ route }) => {
     // const { otherParam } = route.params;
 
     console.log(route.params.checkRoute);
-    route.params.checkRoute === true && setExpanded(true)
+    route.params.checkRoute === true && setIsExpended(true)
         }
         
+        //!!파기하기
     },[route])
-  
+    useEffect(()=>{
+        expanded === true && navigation.navigate('SettingPincode');
+        // isExpended && setExpanded(!expanded);
+        //!!파기하기
+    },[expanded]);
     const goRight = useCallback(() => navigation.navigate('SendInfo'),[]) 
     const dispatch = useDispatch();//dispatch 사용
     const lang = useSelector((state) => state.language);
@@ -39,7 +46,7 @@ const Setting = ({ route }) => {
         checked === 'ko' ? dispatch(changeAction('ko')) : dispatch(changeAction('en'));
     },[checked]); 
     const [word, setWord] = useState([]);
-
+    const [arrow, setArrow] = useState('arrow-down');
     useEffect(() => {
         RNSecureKeyStore.get("mnemonic")
         .then((res) => {
@@ -51,10 +58,12 @@ const Setting = ({ route }) => {
         });
     },[]);
 
- 
+    useEffect(() => {
+    },[]);  
 
     const handlePress = () => {
         setExpanded(!expanded)
+        isExpended && setIsExpended(false);
     };
 
     const check = () => {
@@ -101,12 +110,12 @@ const Setting = ({ route }) => {
                         <View style={{ marginVertical:5}}>
                         <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
                             {/* <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}> */}
-                            <TouchableOpacity style = {styles.confirmBtn} onPress={()=> navigation.navigate('SettingPincode')}>
+                            <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}>
                             <Text style = {{color: '#fff'}}>비밀번호 복구 단어 찾기</Text>
-                                <Icon name = 'arrow-right' size={26} color ='#fff'/>
+                                <Icon name = {isExpended ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
                             </TouchableOpacity>
                             
-                            {expanded ? check(): null}
+                            {isExpended ? check() : null}
                             {/* <View style = {styles.word_list_wrapper}>
                                 {word.map((item, idx) => {
                                     return(

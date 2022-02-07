@@ -11,7 +11,7 @@ i18n
         en:en,
         ko,ko
     },
-    lng: "en", // default
+    lng: "ko", // default
     fallbackLng: "en", //안될 시?
     ns:['page'],  //ns는 namespace로 label, button, menu 등 구분해서 관리할 경우 필요??
     interpolation: {

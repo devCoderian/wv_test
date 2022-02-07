@@ -59,24 +59,20 @@ const SettingPincode = () => {
     const [number, setNumber]  = useState(numberId);
     const [falseCount, setFalseCount] = useState(0);
 
-    const checkFalseCount = () => {
-     
-        setFalseCount((prev) => prev+1);
-    }
 
-useEffect(()=> {
-    if(falseCount > 0){
-        setPincode(['', '', '', '']);
-        Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
-    } 
-    if(falseCount === 3){
-        Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
-        navigation.navigate('Settings', {
-            checkRoute: false,
-          });
-        console.log('불일치 이전 페이지 확인..??')   
-    }
-},[falseCount]);
+    useEffect(()=> {
+        if(falseCount > 0){
+            setPincode(['', '', '', '']);
+            Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
+        } 
+        if(falseCount === 3){
+            Alert.alert(`비밀번호가 일치하지 않습니다.${falseCount}/3`);
+            navigation.navigate('Settings', {
+                checkRoute: false,
+            });
+            console.log('불일치 이전 페이지 확인..??')   
+        }
+    },[falseCount]);
  
     const makeSecureKey = async (code) => {
       

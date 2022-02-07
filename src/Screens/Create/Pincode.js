@@ -1,15 +1,16 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'
+import { useIsFocused } from '@react-navigation/native';
 const Pincode = () => {
 
+    const isFocused = useIsFocused(); 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('PincodeConfirm'),[]) 
-
+    const goRight = useCallback(() => navigation.navigate('PincodeConfirm'),[]);
     let numberId = [
         {id: 1},
         {id: 2},
@@ -26,6 +27,10 @@ const Pincode = () => {
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
    
+    useEffect(() => {
+        setPincode(['','','',''])
+    },[isFocused]);
+
     const makeSecureKey = async (code) => {
         const pincode = code.join('');
         RNSecureKeyStore.set("pincode", pincode , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
@@ -45,17 +50,19 @@ const Pincode = () => {
                 code[i] = id;
                 setPincode(code);
                 i === 3 && makeSecureKey(code);   
+                break;
+            }else{
+                continue; 
             }
         }
     }
 
     const onDelete = () => {
-        
         let code = [...pincode];
         for(let i = code.length-1; i >= 0; i--){
             if(code[i] !== ''){
-                code[i] = ''
-                break;
+                code[i] = '';
+                break; 
             }else{
                 continue;
             }

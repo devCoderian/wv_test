@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {useEffect, useState} from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from '../Home';
 import MnemonicConfirm from '../Create/MnemonicConfirm';
@@ -15,22 +15,35 @@ import SendInput from '../Main/SendInput';
 import SendInfo from '../Main/SendInfo';
 import {Provider as ReduxProvider} from 'react-redux';
 import { makeStore } from '../../store/store';
-import Topbar from '../../Components/Topbar';
 import Settings from '../../Screens/Settings'
 import SettingPincode from '../../Screens/Settings/SettingPincode'
 import SendPincode from '../Main/SendPincode';
-
-
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
+import Topbar from '../../Components/Topbar'
 /* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */
 const Navigator = () => {
 
   const store = makeStore();
-  const Stack = createNativeStackNavigator ();
+  
+  const [main, setMain] = useState();
+
+  useEffect(() => {
+      RNSecureKeyStore.get("privkey")
+      .then((res) => {
+        console.log('res', res);
+        setMain(true);
+      }, (err) => {
+        setMain(false);
+      });
+  },[])
+
+  const Stack = createNativeStackNavigator();
+
   return (
         <ReduxProvider store ={store}>
         <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name = "Home" component = {Home}/>
+        <Stack.Navigator initialRouteName= {main ===  true ? 'Main' : 'Home'}  screenOptions={{headerShown: false}}>
+        <Stack.Screen name = "Home" component = {Home} />
         <Stack.Screen name = "Pincode" component = {Pincode}/>
         <Stack.Screen name = "PincodeConfirm" component = {PincodeConfirm}/>
         <Stack.Screen name = "MnemonicInfo" component = {MnemonicInfo}/>

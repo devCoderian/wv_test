@@ -1,18 +1,14 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase, Linking} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, BackHandler, Image, ScrollView, Alert, Linking} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import Topbar from '../../Components/Topbar';
-// import Moment from 'react-moment';
-//import moment from 'moment';
 import moment from "moment-timezone"
-//import {moment as timezone}  from 'moment-timezone';
-// timezone.tz.setDefault("Asia/Seoul")
-import {WebView} from 'react-native-webview';
+
 const Main = () => {
   
     const navigation = useNavigation();
@@ -85,7 +81,26 @@ const Main = () => {
         )
     }
 
-
+    useEffect(() => {
+        const backAction = () => {
+          Alert.alert("Hold on!", "앱을 종료하시겠습니까?", [
+            {
+              text: "취소",
+              onPress: () => null,
+            },
+            { text: "확인", onPress: () => BackHandler.exitApp() }
+          ]);
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+      }, []);
+    
     useEffect(() => {
         //더미데이터
         getCoinInfo('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');

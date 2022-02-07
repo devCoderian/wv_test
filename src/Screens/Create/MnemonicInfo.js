@@ -1,14 +1,10 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { SafeAreaView, Text, StatusBar, TouchableOpacity, View, StyleShee, ImageBackground,StyleSheet } from 'react-native'
-// import Svg, { Path } from 'react-native-svg';
-// import Icon from 'react-native-vector-icons/FontAwesome';
-// import Confirm from '../../Components/Confirm';
-// import { Mnemonic  } from 'bitcore-mnemonic';
+import { Text, TouchableOpacity, View, ImageBackground, StyleSheet } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 // const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
-
+import Topbar from '../../Components/Topbar'
 const MnemonicInfo  = () => {
 
     const navigation = useNavigation();
@@ -26,25 +22,24 @@ const MnemonicInfo  = () => {
     },[]);
 
 
-   
-
     return (
         <View style = {styles.container}>
-              <ImageBackground style ={styles.image_bg} source ={BG}>
-            <View style = {styles.content} >
-                <View style = {{ marginTop: 40, alignItems: 'center'}} >
-                <Text style = {styles.txt_title}>비밀번호 백업 복구 단어</Text>
-                <Text style = {styles.txt_subtitle}>24개의 단어를 종이에 적거나 사진을 찍어 보관하세요.</Text>
-                <Text style = {styles.txt_subtitle}>* 지갑 복구 시 사용됩니다.</Text>
-                </View>
+            <ImageBackground style ={styles.image_bg} source ={BG}>
+                <Topbar />
+                <View style = {styles.content} >
+                    <View style = {{ marginTop: 40, alignItems: 'center'}} >
+                        <Text style = {styles.txt_title}>비밀번호 백업 복구 단어</Text>
+                        <Text style = {styles.txt_subtitle}>12개의 단어를 종이에 적거나 사진을 찍어 보관하세요.</Text>
+                        <Text style = {styles.txt_subtitle}>* 지갑 복구 시 사용됩니다.</Text>
+                    </View>
                 <View style = {styles.word_list_wrapper}>
-                    {word.map((item, idx) => {
+                    {word.map((item) => {
                         return(
                             <>
-                         <View key={item.id} style= {[styles.word_wrapper]}>
-                            <Text key = {item.id} style = {[styles.word]}>{item}</Text>
-                        </View>
-                        </>
+                                <View key={item.id} style= {[styles.word_wrapper]}>
+                                    <Text key = {item.id} style = {[styles.word]}>{item}</Text>
+                                </View>
+                            </>
                         )
                     })}
                 </View>
@@ -58,8 +53,6 @@ const MnemonicInfo  = () => {
     </View>
     )
 }
-
-
 
 const styles = StyleSheet.create({
     container:{
@@ -88,7 +81,6 @@ const styles = StyleSheet.create({
         height: 100, 
     },
     content: {
-        // backgroundColor: '#5566ee',
         flex: 1,
         marginTop: -10,
         paddingHorizontal: 40,

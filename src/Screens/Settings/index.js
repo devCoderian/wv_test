@@ -26,7 +26,7 @@ const Setting = ({ route }) => {
     // const { checkRoute } = route.params;
     // const { otherParam } = route.params;
 
-    console.log(route.params.checkRoute);
+    console.log(route);
     route.params.checkRoute === true && setIsExpended(true)
         }
         
@@ -43,7 +43,8 @@ const Setting = ({ route }) => {
     const [checked, setChecked] = useState(lang);
     const { t, i18n } = useTranslation();
     useEffect(() => {
-        checked === 'ko' ? dispatch(changeAction('ko')) : dispatch(changeAction('en'));
+        console.log(checked)
+        checked === 'ko' ?  i18n.changeLanguage('ko') :i18n.changeLanguage('en');
     },[checked]); 
     const [word, setWord] = useState([]);
     const [arrow, setArrow] = useState('arrow-down');
@@ -85,7 +86,7 @@ const Setting = ({ route }) => {
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
-              <Topbar logo={true}/>
+              <Topbar logo={true} close={true}/>
               <View style = {styles.content} >
                 
                 <View style={{ marginVertical:15}}>

@@ -2,13 +2,28 @@ import React, { useState, useCallback, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
-//pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import bip39 , {wordlists} from 'react-native-bip39';
-
+import Topbar from '../../Components/Topbar'
 import rizonjs from '../../../rizonjs/dist/rizon'
+import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
+import { useIsFocused } from '@react-navigation/native';
 
 const PincodeConfirm = () => {
+    const [visible, setVisible] = useState(false);
+    const [falseCount, setFalseCount] = useState(0);
+
+    const hideDialog = () => {
+        setVisible(false);
+        falseCount === 3 &&  navigation.navigate('Home');
+    };
+
+
+    /*rizonjs*/
+    const chainId = "groot-14";
+    const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
+    rizon.setBech32MainPrefix("rizon");
+    rizon.setPath("m/44'/118'/0'/0/0");
 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('MnemonicInfo'),[]);
@@ -31,51 +46,35 @@ const PincodeConfirm = () => {
 
   
     const makeAddress = async(mnemonic) => {
-        
-        const chainId = "groot-14";
-        const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
-        rizon.setBech32MainPrefix("rizon");
-        rizon.setPath("m/44'/118'/0'/0/0");
-        //const address = rizon.getAddress(mnemonic);
-        //const ecpairPriv = rizon.getECPairPriv(mnemonic);
-        //console.log(ecpairPriv);
-        // console.log(address);
-        // console.log(ecpairPriv.toString('hex'));
-        // goRight(); 
         RNSecureKeyStore.set("address", rizon.getAddress(mnemonic), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
         .then(()=> {
             RNSecureKeyStore.set("privkey", rizon.getECPairPriv(mnemonic).toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
             .then(()=> {
-                //wordlists -> 니모닉 단어 리스트 불러오기(wordlists)
                 goRight(); 
             });
         });
+        // hex code 원복 방법
         // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
-      
     }
 
     const makeSecureKey = async (code) => {
-      
+        
         const pincode = code.join('');
-        console.log('pincode', pincode);
-        // let mnemonic = ''; 
-        //testPincode => 복구 끝나면 pincode로 변경하기
         RNSecureKeyStore.get("pincode").then((res) => {
             if(pincode === res){
-                console.log('일치, 니모닉 화면으로 넘어가기');
-                // let check = bip39.generateMnemonic();
-                // console.log(check);
+                console.log('일치');
                 bip39.generateMnemonic().then((res) => {
                     RNSecureKeyStore.set("mnemonic", res , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
                     .then(() => {
-                        console.log('mnemonic',res);
                         makeAddress(res);
                     }, (err) => {
                         console.log(err);
                     });
                   });
             }else{
-                console.log('불일치 이전 페이지 확인..??')
+                console.log('불일치')
+                setFalseCount((prev) => prev+1);
+                setVisible(true);
             }
 	    }, (err) => {
 		    console.log(err);
@@ -84,73 +83,103 @@ const PincodeConfirm = () => {
     }
 
     const onPressNum = (id) => {
-   
-      
         let code = [...pincode];
         for(let i = 0; i<code.length; i++){
             if(code[i] === ''){
                 code[i] = id;
                 setPincode(code);
-                if(i === 3){
-                    // 4 되면  securestorage 저장 
-                    makeSecureKey(code);
-                    
-                }
+                i === 3 && makeSecureKey(code);   
                 break;
             }else{
-                continue;
+                continue; 
             }
         }
     }
 
     const onDelete = () => {
-        
         let code = [...pincode];
-      
         for(let i = code.length-1; i >= 0; i--){
-            console.log('code[i]', i, code[i])
             if(code[i] !== ''){
-                code[i] = ''
-                console.log('code[i]', i, code[i])
-                break;
+                code[i] = '';
+                break; 
             }else{
                 continue;
             }
         }
         setPincode(code);
     }
+    const isFocused = useIsFocused(); 
+
+    useEffect(() => {
+        setPincode(['','','',''])
+    },[isFocused]);
+
+        
+    useEffect(()=> {
+        if(falseCount > 0){
+            setPincode(['', '', '', '']);
+        } 
+        if(falseCount === 3){
+            hideDialog();
+        }
+    },[falseCount]);
 
     return(
         <SafeAreaView style = {styles.container}>
-            <ImageBackground style ={styles.image_bg} source ={BG}>
-            <View style = {styles.input_box}>
-                <View style = {styles.txt_container}>
-                    <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                    <Text style = {styles.txt_subtitle}>지갑 복구 시 사용될  PIN 번호 4자리를 입력해주세요.</Text>
-                </View>
-                <View style = {styles.code_wrapper}>
-                    {
-                        pincode.map((item, idx) => {
-                            let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
-                            return <View key = {idx} style= {style}></View>
-                        })
-                    }
-                </View>
-                <View style = {styles.number_container}>
-                    {number.map((item)=>{
-                        return(
-                            <TouchableOpacity key={item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
-                                <Text style = {styles.number}>{item.id}</Text>
-                            </TouchableOpacity>
-                        )
-                    })}
-                </View>
-                <TouchableOpacity style = {styles.delete_btn} onPress={() => onDelete()}>
-                        <Text style= {{color: '#fff'}}>delete</Text>
-                </TouchableOpacity>
+        <ImageBackground style ={styles.image_bg} source ={BG}>
+        <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
+        <View style = {styles.input_box}>
+            <View style = {styles.txt_container}>
+                <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
+                <Text style = {styles.txt_subtitle}>한번 더 입력해주세요.</Text>
             </View>
-            </ImageBackground>
-        </SafeAreaView> 
+            <View style = {styles.code_wrapper}>
+                {
+                    pincode.map((item, idx) => {
+                        let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
+                        return <View key = {idx} style= {style}></View>
+                    })
+                }
+            </View>
+            <PaperProvider>
+                <View>
+                    <Portal>
+                    <Dialog visible={visible} onDismiss={hideDialog}>
+                        <View style = {{ marginTop : 50, alignItems: 'center'}}>
+                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
+                        <TouchableOpacity style = {{
+                            borderRadius:5,
+                            alignItems:'center',
+                            justifyContent: 'center',
+                            marginVertical: 30,
+                            backgroundColor: '#092C47',
+                            width: 100,
+                            height: 40}} onPress={hideDialog}>
+                            <Text style = {{
+                                color: '#fff',
+                                fontFamily: 'Roboto'
+                                }} >확인</Text>
+                            </TouchableOpacity>
+                            </View>
+                    </Dialog>
+                    </Portal>
+                </View>
+                </PaperProvider>
+        </View>
+            <View style = {styles.number_container}>
+                {number.map((item) =>{
+                    return(
+                        <TouchableOpacity key = {item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                            <Text style = {styles.number}>{item.id}</Text>
+                        </TouchableOpacity>
+                    )
+                })}
+            </View>
+            <TouchableOpacity style={styles.delete_btn} onPress={() => onDelete()}>
+                    <Text style= {{color: '#fff'}}>delete</Text>
+            </TouchableOpacity>
+        </ImageBackground>
+    </SafeAreaView> 
   );
         
 };
@@ -164,7 +193,7 @@ const styles = StyleSheet.create({
     },
     input_box:{
         width: '100%',
-        height: '37%',
+        flex: 1,
         backgroundColor: '#F1F1F1',
         alignItems:'center'
     },
@@ -183,7 +212,7 @@ const styles = StyleSheet.create({
     txt_subtitle: {
         fontSize: 15,
         fontWeight: '400',
-        lineHeight: 21, 
+        lineHeight: 25, 
         color: '#000'
     },
     code_wrapper:{
@@ -204,7 +233,7 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.45,
+        shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
     },
@@ -221,14 +250,15 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.45,
         shadowRadius: 3.84,
         elevation: 5,
     },
     number_container: {
+        flex: 1.8,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 115,
+        marginTop: 25,
         width: 300,
         height: 348,
         alignItems: 'center',

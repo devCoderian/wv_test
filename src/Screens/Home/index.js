@@ -1,18 +1,64 @@
-import React, { useCallback} from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView, BackHandler, Alert } from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import MAIN from '../../../src/assets/images/spaceship.png';
 import Topbar from '../../Components/Topbar';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-const Home = () => {
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
+import { useIsFocused } from '@react-navigation/native';
+const Home = ({route}) => {
     const navigation = useNavigation();
 
     const goRight = useCallback(() => navigation.navigate('Pincode'),[]) ;
     const goRestore = useCallback(() => navigation.navigate('MnemonicInput'),[]);
 
     const { t, i18n } = useTranslation();
+    const isFocused = useIsFocused(); 
+
+    // useEffect(() => {
+    //     RNSecureKeyStore.remove("pincode")
+    //     .then((res) => {
+    //         console.log(res);
+    //     }, (err) => {
+    //         console.log(err);
+    //     });
+    //     RNSecureKeyStore.remove("privkey")
+    //     .then((res) => {
+    //         console.log(res);
+    //     }, (err) => {
+    //         console.log(err);
+    //     });
+    //     RNSecureKeyStore.remove("address")
+    //     .then((res) => {
+    //         console.log(res);
+    //     }, (err) => {
+    //         console.log(err);
+    //     });
+    // },[isFocused]);
+
+    
+    useEffect(() => {
+        const backAction = () => {
+        if( route.name == 'Home'){
+          Alert.alert("Hold on!", "앱을 종료하시겠습니까?", [
+            {
+              text: "취소",
+              onPress: () => null,
+            },
+            { text: "확인", onPress: () =>  BackHandler.exitApp()}
+          ]);
+          return true;
+        };
+        }
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+        return () => backHandler.remove();
+      }, []);
+    
 
     return(
         <SafeAreaView style = {styles.container}>

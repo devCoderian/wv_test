@@ -1,6 +1,6 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, Alert, Image, ScrollView, ScrollViewBase} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
@@ -9,62 +9,77 @@ import Topbar from '../../Components/Topbar';
 import { RadioButton, List  } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux'
-import { changeAction } from '../../store/actions';
 import { useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 
 const Setting = ({ route }) => {
   
     const navigation = useNavigation();
-  
+    const isFocused = useIsFocused(); 
     console.log(route.params);
     const [expanded, setExpanded] = useState(false);
     const [isExpended, setIsExpended] = useState(false);
-
+    const [hasMemonic, setHasMemonic] = useState(false);
+    const init = () => {
+        console.log('초기화')
+        RNSecureKeyStore.remove("privkey")
+        .then((res) => {
+            RNSecureKeyStore.remove("mnemonic")
+            .then((res) => {
+                RNSecureKeyStore.remove("address")
+                .then((res) => {
+                    navigation.navigate('Home');
+                }, (err) => {
+                    console.log(err);
+                });
+            }, (err) => {
+                console.log(err);
+            });
+        }, (err) => {
+            console.log(err);
+        });
+       
+    }
     useEffect(()=>{
         if(route.params !== undefined){
-            
-    // const { checkRoute } = route.params;
-    // const { otherParam } = route.params;
-
-    console.log(route);
-    route.params.checkRoute === true && setIsExpended(true)
+            route.params.checkRoute === true && setIsExpended(true)
         }
-        
-        //!!파기하기
-    },[route])
+    },[route,isFocused])
+
     useEffect(()=>{
         expanded === true && navigation.navigate('SettingPincode');
-        // isExpended && setExpanded(!expanded);
-        //!!파기하기
-    },[expanded]);
-    const goRight = useCallback(() => navigation.navigate('SendInfo'),[]) 
-    const dispatch = useDispatch();//dispatch 사용
+    },[expanded, isFocused]);
+    
     const lang = useSelector((state) => state.language);
     const [checked, setChecked] = useState(lang);
     const { t, i18n } = useTranslation();
     useEffect(() => {
         console.log(checked)
         checked === 'ko' ?  i18n.changeLanguage('ko') :i18n.changeLanguage('en');
-    },[checked]); 
+    },[checked, isFocused]); 
     const [word, setWord] = useState([]);
-    const [arrow, setArrow] = useState('arrow-down');
     useEffect(() => {
         RNSecureKeyStore.get("mnemonic")
         .then((res) => {
-            console.log(res);
+            console.log('res',res);
             let wordList = res.split(" ");
             setWord(wordList);
         }, (err) => {
             console.log(err);
         });
-    },[]);
+    },[isFocused]);
 
     useEffect(() => {
+        setChecked('en')
     },[]);  
 
     const handlePress = () => {
-        setExpanded(!expanded)
-        isExpended && setIsExpended(false);
+        if(hasMemonic === true){
+            setExpanded(!expanded)
+            isExpended && setIsExpended(false);
+        }else{
+            Alert.alert('먼저 지갑을 생성하거나 복구해주세요.')
+        }
     };
 
     const check = () => {
@@ -89,9 +104,9 @@ const Setting = ({ route }) => {
               <Topbar logo={true} close={true}/>
               <View style = {styles.content} >
                 
-                <View style={{ marginVertical:15}}>
+                <View style={{ marginTop:20}}>
                     <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
-                        <View style = {styles.confirmBtn} onPress={goRight}>
+                        <View style = {styles.confirmBtn} >
                             <Text style = {styles.confirm_txt}>Laguage</Text>
                             <Text style = {styles.confirm_txt}>{t('lang1')}</Text>
                                 <RadioButton
@@ -108,64 +123,24 @@ const Setting = ({ route }) => {
                         </View>
                     </View>
                         <View style = {styles.content} >
-                        <View style={{ marginVertical:5}}>
-                        <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
-                            {/* <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}> */}
-                            <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}>
-                            <Text style = {{color: '#fff'}}>비밀번호 복구 단어 찾기</Text>
-                                <Icon name = {isExpended ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
-                            </TouchableOpacity>
+                                <View style={{ marginVertical:5}}>
+                                <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
+                                <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}>
+                                <Text style = {{color: '#fff'}}>비밀번호 복구 단어 찾기</Text>
+                                    <Icon name = {isExpended ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
+                                </TouchableOpacity>
                             
-                            {isExpended ? check() : null}
-                            {/* <View style = {styles.word_list_wrapper}>
-                                {word.map((item, idx) => {
-                                    return(
-                                        <>
-                                    <View key={idx} style= {[styles.word_wrapper]}>
-                                        <Text style = {[styles.word]}>{item}</Text>
-                                    </View>
-                                    </>
-                                    )
-                                })}
-                            </View> */}
-
-                            
-                        </View>
-                        </View>
-                        </View>
-                        {/* </View> */}
-                      
-                       
-
-                    
-
-                        {/* <List.Section title="Accordions">
-                        <List.Accordion
-                            title="비밀번호 복구 단어"
-                            left={props => <List.Icon {...props} icon="folder" />}
-                            expanded={expanded}
-                            onPress={handlePress}>
-                            <View style={{justifyContent: 'center'}}>
-                             <View style = {styles.word_list_wrapper}>
-                                {word.map((item, idx) => {
-                                    return(
-                                        <>
-                                    <View key={idx} style= {[styles.word_wrapper]}>
-                                        <Text style = {[styles.word]}>{item}</Text>
-                                    </View>
-                                    </>
-                                    )
-                                })}
-                                </View>
+                                {isExpended ? check() : null}
                             </View>
-                        </List.Accordion>
-                        </List.Section>
-                     */}
-               
-
-
-
-        
+                            <View style={{ marginVertical:5}}>
+                                <Text style = {{color: '#fff'}}>초기화</Text>
+                                <TouchableOpacity style = {styles.confirmBtn} onPress={()=> init()}>
+                                <Text style = {{color: '#fff'}}>초기화</Text>
+                                    <Icon name = 'arrow-down' size={26} color ='#fff'/>
+                                </TouchableOpacity>
+                            </View>
+                            </View>
+                        </View>
             </ImageBackground>
     </View>
     )
@@ -188,12 +163,12 @@ const styles = StyleSheet.create({
         marginTop: -10,
         paddingHorizontal: 40,
         paddingTop: 20,
-        alignItems:'center'
+        alignItems:'center',
         
     },
     confirmBtn: {
         marginTop: 15,
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         width: 370, 
         height: 60,
         // backgroundColor: '#0086F0',
@@ -203,6 +178,7 @@ const styles = StyleSheet.create({
         borderColor: '#FFF',
         flexDirection: 'row',
         alignItems: 'center',
+        paddingHorizontal: 30
     },
     confirm_txt:{
         color: '#fff',

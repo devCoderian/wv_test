@@ -73,7 +73,7 @@ const Pincode = () => {
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
-            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
+            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} back='Home'/>
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
                     <Text style = {styles.txt_title}>Enter Your PIN Code</Text>

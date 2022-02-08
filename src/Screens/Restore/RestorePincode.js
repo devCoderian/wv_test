@@ -1,17 +1,15 @@
-import React, { useState, useCallback, useEffect} from 'react';
+import React, { useCallback, useState, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
-import { useNavigation } from '@react-navigation/native';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 from 'react-native-bip39';
-import rizonjs from '../../../rizonjs/dist/rizon'
-
-const RestorePincode = () => {
-
+import { useNavigation } from '@react-navigation/native';
+import Topbar from '../../Components/Topbar'
+import { useIsFocused } from '@react-navigation/native';
+const Pincode = () => {
+    const isFocused = useIsFocused(); 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('Main'),[]);
-
+    const goRight = useCallback(() => navigation.navigate('RestorePincodeConfirm'),[]);
     let numberId = [
         {id: 1},
         {id: 2},
@@ -27,82 +25,54 @@ const RestorePincode = () => {
     ]
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
+   
+    useEffect(() => {
+        setPincode(['','','',''])
+    },[isFocused]);
 
     const makeSecureKey = async (code) => {
-      
         const pincode = code.join('');
-        console.log('pincode', pincode);
-       
-        //testPincode => 복구 끝나면 pincode로 변경하기
-        RNSecureKeyStore.get("testPincode")
-	    .then((res) => {
-		    console.log(res);
-            if(pincode === res){
-                console.log('일치, 니모닉 화면으로 넘어가기');
-                bip39.generateMnemonic(256).then(mnemonic => {
-                    RNSecureKeyStore.set("mnemonic", mnemonic , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-                    .then(() => {
-                        //confirm 창
-                        goRight();
-                    }, (err) => {
-                        console.log(err);
-                    });
-                  });
-            }else{
-                console.log('불일치 이전 페이지 확인..??')
-            }
-	    }, (err) => {
-		    console.log(err);
-	    });
+        RNSecureKeyStore.set("pincode", pincode , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        .then((res) => {
+            console.log(res);
+            goRight();
+        }, (err) => {
+            console.log(err);
+        });
      
     }
 
     const onPressNum = (id) => {
-   
-      
         let code = [...pincode];
         for(let i = 0; i<code.length; i++){
             if(code[i] === ''){
                 code[i] = id;
                 setPincode(code);
-                if(i === 3){
-                    // code[i] = id;
-                     // RNSecureKeyStore.set(pincode);
-                    // 4 되면  securestorage 저장 
-                    makeSecureKey(code);
-                    
-                }
+                i === 3 && makeSecureKey(code);   
                 break;
             }else{
-                continue;
+                continue; 
             }
         }
-
-        
-        console.warn(code);
     }
 
     const onDelete = () => {
-        
         let code = [...pincode];
-      
         for(let i = code.length-1; i >= 0; i--){
-            console.log('code[i]', i, code[i])
             if(code[i] !== ''){
-                code[i] = ''
-                console.log('code[i]', i, code[i])
-                break;
+                code[i] = '';
+                break; 
             }else{
                 continue;
             }
         }
-        console.warn(code);
         setPincode(code);
     }
 
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
+            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
                     <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
@@ -110,29 +80,28 @@ const RestorePincode = () => {
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
-                        pincode.map(item => {
+                        pincode.map((item, idx) => {
                             let style = item !== '' ?  styles.code_circle: styles.code_circle_empty;
-                            return <View style= {style}></View>
+                            return <View key = {idx} style= {style}></View>
                         })
                     }
                 </View>
+            </View>
                 <View style = {styles.number_container}>
-                    {number.map((item, idx)=>{
+                    {number.map((item) =>{
                         return(
-                            <TouchableOpacity key={idx} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
+                            <TouchableOpacity key = {item.id} style= {styles.number_pad} onPress= {() => onPressNum(item.id)}>
                                 <Text style = {styles.number}>{item.id}</Text>
                             </TouchableOpacity>
                         )
                     })}
-                </View>
-                <TouchableOpacity style = {styles.delete_btn} onPress={() => onDelete()}>
+                     </View>
+                    <TouchableOpacity style={styles.delete_btn} onPress={() => onDelete()}>
                         <Text style= {{color: '#fff'}}>delete</Text>
-                </TouchableOpacity>
-            </View>
+                    </TouchableOpacity>
             </ImageBackground>
         </SafeAreaView> 
   );
-        
 };
 const styles = StyleSheet.create({
     container:{
@@ -144,7 +113,7 @@ const styles = StyleSheet.create({
     },
     input_box:{
         width: '100%',
-        height: '37%',
+        flex: 1,
         backgroundColor: '#F1F1F1',
         alignItems:'center'
     },
@@ -154,16 +123,16 @@ const styles = StyleSheet.create({
     },
     txt_title: {
         width: 250,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '500',
-        lineHeight: 58,
+        lineHeight: 35,
         textAlign: 'center',
         color: '#000',
     },
     txt_subtitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '400',
-        lineHeight: 21, 
+        lineHeight: 25, 
         color: '#000'
     },
     code_wrapper:{
@@ -201,28 +170,29 @@ const styles = StyleSheet.create({
 	        width: 0,
 	        height: 2,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.45,
         shadowRadius: 3.84,
         elevation: 5,
     },
     number_container: {
+        flex: 1.8,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 90,
-        width: 280,
+        marginTop: 25,
+        width: 300,
         height: 348,
         alignItems: 'center',
         justifyContent: 'center'
     },
     number_pad:{
-        width: 75,
-        height: 75,
-        borderRadius: 75,
+        width: 80,
+        height: 80,
+        borderRadius: 80,
         justifyContent: 'center',
         alignItems:'center',
         backgroundColor: 'rgba(225, 255, 255, 0.2)',
-        marginHorizontal: 9,
-        marginVertical: 7
+        marginHorizontal: 10,
+        marginVertical: 8
     },
     number:{
         color: '#fff',
@@ -235,4 +205,4 @@ const styles = StyleSheet.create({
     }
     });
 
-export default RestorePincode;
+export default Pincode;

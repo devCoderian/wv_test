@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 // const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
 import Topbar from '../../Components/Topbar'
+import PreventBack from '../../Components/PreventBack'
 const MnemonicInfo  = () => {
 
     const navigation = useNavigation();
@@ -21,11 +22,11 @@ const MnemonicInfo  = () => {
 	    });
     },[]);
 
-
+    PreventBack('Pincode');
     return (
         <View style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
-                <Topbar />
+                <Topbar back='Pincode' />
                 <View style = {styles.content} >
                     <View style = {{ marginTop: 40, alignItems: 'center'}} >
                         <Text style = {styles.txt_title}>비밀번호 백업 복구 단어</Text>

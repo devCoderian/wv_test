@@ -1,12 +1,16 @@
 import React ,{ useState, useCallback, useEffect} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, RefreshControl, Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Topbar from '../../Components/Topbar';
+import rizonjs from '../../../rizonjs/dist/rizon'
+import bip39 , {wordlists} from 'react-native-bip39';
 const MnemoinicInput = () => {
+
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('RestorePincode'),[]) 
+    
     let numberId = [
         {id: 1},
         {id: 2},
@@ -22,59 +26,73 @@ const MnemoinicInput = () => {
         {id: 12},
     ]
     const [numArray, setNumArray] = useState(numberId);
-    const [inputArray, setInputArray] = useState(['','','','','','','','','','','','','','', ]);
+    const [inputArray, setInputArray] = useState(['','','','','','','','','','','','']);
     const [inputText, setInputText] = useState('');
     // const [inputText, setInputText] = useState('leftmergeaugustenemysadnesshumandiagramproofwildeagleshootbetterboardhumorwordmediamotorfirmzebraindicateflockthingtrialprotect');
-    const [mnemonic, setMnemonic] = useState("left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect");
+    //const [mnemonic, setMnemonic] = useState("left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect");
 
-        // let seq = [];
-        // for(let i = 1; i<13; i++){
-        //     seq.push(i);
-        // }
-     
-    // useEffect(() => {
-    //     RNSecureKeyStore.get("mnemonic")
-    //     .then((res) => {
-    //         setMnemonic(res);
-    //     });
-    // },[])
-
+  
+    /*rizonjs*/
+    const chainId = "groot-14";
+    const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
+    rizon.setBech32MainPrefix("rizon");
+    rizon.setPath("m/44'/118'/0'/0/0");
         
     
     const onChangeMnemonic = (idx, text) => { 
-        let word = [...inputArray];
-        for(let i = 0; i<12; i++){
-                word[idx]= text;
-        }
-        
-
-
         //문자열 공백 제거 정규식
         //setInputText(text.replace(/(\s*)/g, ""));
-        // console.log(text);
-        // let check = [];
-        // check.push(text);
-        // setInputText(...check);
+        let word = [...inputArray];
+        for(let i = 0; i<12; i++){
+            word[idx]= text.trim();
+        }
+      
+        console.log([...word].join(' '));
         setInputArray([...word]);
-        setInputText(inputArray.join(' '));
     }
     
 
+    const [check, setCheck] =useState('');
     const checkMnemonic = () => { 
-        // setInputText(inputArray.join(','));
-        console.log('inputText', inputText);
-        console.log("mnemonic", mnemonic.replace(/(\s*)/g, ""));
-        console.log(inputText === mnemonic.replace(/(\s*)/g, ""));
-        console.log(typeof inputText);
-        if(inputText == mnemonic.replace(/(\s*)/g, "")){
-            //goRight();
-        }else{
-            //컨펌창 만들기
-            //navigation.navigate('Home')
+      
+        if (!bip39.validateMnemonic(inputArray.join(' '))){
+            Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
         }
+      
+        makeAddress(inputArray.join(' '));
+       
+        RNSecureKeyStore.set("mnemonic", inputArray.join(' '), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        .then((res)=> {
+            console.log('니모닉 저장', res)
+        },(err) => { 
+            Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
+            // navigation.navigate('MnemonicInput')
+            //setInputArray(['','','','','','','','','','','','']);
+        })
+
        
     }
+    //ghost grape embody hover salon session mirror cattle decrease pair peace visa
+    const makeAddress = async(mnemonic) => {
+        console.log('mnemonic',inputArray.join(' '));
+        const add = rizon.getAddress(mnemonic);
+        const privkey = rizon.getECPairPriv(mnemonic);
+        console.log(add);
+        console.log(privkey.toString('hex'));
 
+        RNSecureKeyStore.set("address", add, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        .then(()=> {
+            RNSecureKeyStore.set("privkey", privkey.toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+            .then(()=> {
+                goRight(); 
+            });
+        });
+
+        // hex code 원복 방법
+        // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
+    }
+
+    
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -165,6 +183,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 5,
+        color: '#fff',
+        
     },
     word: {
         fontSize: 18,

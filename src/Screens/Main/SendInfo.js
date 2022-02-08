@@ -19,15 +19,6 @@ const SendInfo = () => {
     const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
    
     useEffect(()=> {
-        // RNSecureKeyStore.get('address').then((item) => {
-        //     setAddress(item);
-        //     console.log('address', item)
-        // });
-     
-        // RNSecureKeyStore.get('privkey').then((item) => {
-        //     setPriveKey(item);
-        //     console.log('privkey', item)
-        // });
 
         console.log('send_amount', send_amount);
         console.log('send_fee',send_fee);
@@ -43,7 +34,7 @@ const SendInfo = () => {
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
-              <Topbar logo={true}/>
+              <Topbar />
                 <View style = {styles.content} >
                 <View style = {styles.progress_wrapper}>
                     <View style = {styles.progress_bar}></View>
@@ -59,7 +50,7 @@ const SendInfo = () => {
                 <View style = {[styles.info_wrapper, {height: 250}]}>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>수량</Text>
-                        <Text style = {styles.txt_subtitle}>{send_amount/1000000} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{(parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)/1000000} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>수수료</Text>
@@ -68,7 +59,7 @@ const SendInfo = () => {
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>Total</Text>
                         {/* <Text style = {styles.txt_subtitle}>{(parseInt(send_amount)+send_fee)/1000000} atolo</Text> */}
-                        <Text style = {styles.txt_subtitle}>{(send_amount+(send_fee*100000))/1000000} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{send_amount} atolo</Text>
                     </View>
                     <View style ={{width: 370, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.4)', alignSelf: 'center'}}></View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
@@ -78,7 +69,7 @@ const SendInfo = () => {
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>전송 후 가능 수량</Text>
                         {/* <Text style = {styles.txt_subtitle}>{(parseInt(balance)-(parseInt(send_amount)+ parseInt(send_fee)))/1000000} atolo</Text> */}
-                        <Text style = {styles.txt_subtitle}>{((balance-(send_amount+(send_fee*100000)))/1000000)} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{(balance-(parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000))/1000000} atolo</Text>
                     </View>
                 </View>
                 <View style = {{ marginTop: 10}} >

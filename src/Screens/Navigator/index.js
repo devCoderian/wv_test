@@ -13,36 +13,35 @@ import Success from '../Create/Success';
 import SendAddress from '../Main/SendAddress';
 import SendInput from '../Main/SendInput';
 import SendInfo from '../Main/SendInfo';
-import {Provider as ReduxProvider} from 'react-redux';
-import { makeStore } from '../../store/store';
 import Settings from '../../Screens/Settings'
 import SettingPincode from '../../Screens/Settings/SettingPincode'
 import SendPincode from '../Main/SendPincode';
-import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import Topbar from '../../Components/Topbar'
+import RestorePincodeConfirm from '../Restore/RestorePincodeConfirm';
 /* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */
-const Navigator = () => {
-
-  const store = makeStore();
+const Navigator = ({main}) => {
   
-  const [main, setMain] = useState();
-
-  useEffect(() => {
-      RNSecureKeyStore.get("privkey")
-      .then((res) => {
-        console.log('res', res);
-        setMain(true);
-      }, (err) => {
-        setMain(false);
-      });
-  },[])
-
+  console.log(main === 'Main')
   const Stack = createNativeStackNavigator();
-
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //     RNSecureKeyStore.get("privkey")
+  //     .then((res) => {
+  //       dispatch(sendInfo(true));
+  //     }, (err) => {
+  //       dispatch(sendInfo(false));
+  //     });
+  // },[])
+//   useEffect(() => {
+//     RNSecureKeyStore.get("privkey")
+//     .then((res) => {
+//      setMain('Main')
+//     }, (err) => {
+//     setMain('Home')
+//     });
+// },[main])
   return (
-        <ReduxProvider store ={store}>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName= {main ===  true ? 'Main' : 'Home'}  screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName= {main === 'Main'? 'Main' :'Home' }  screenOptions={{headerShown: false}}>
         <Stack.Screen name = "Home" component = {Home} />
         <Stack.Screen name = "Pincode" component = {Pincode}/>
         <Stack.Screen name = "PincodeConfirm" component = {PincodeConfirm}/>
@@ -51,6 +50,7 @@ const Navigator = () => {
         <Stack.Screen name = "MnemonicInput" component = {MnemoinicInput}/>
         <Stack.Screen name = "Success" component = {Success}/>
         <Stack.Screen name = "RestorePincode" component = {RestorePincode}/>
+        <Stack.Screen name = "RestorePincodeConfirm" component={RestorePincodeConfirm} /> 
         <Stack.Screen name = "Main" component = {Main}/>
         <Stack.Screen name = "SendAddress" component = {SendAddress}/>
         <Stack.Screen name = "SendInput" component = {SendInput}/>
@@ -60,7 +60,6 @@ const Navigator = () => {
         <Stack.Screen name = "SettingPincode" component = {SettingPincode}/>
         </Stack.Navigator>
         </NavigationContainer>
-        </ReduxProvider>
     )
 };
 

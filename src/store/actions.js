@@ -26,3 +26,8 @@ export const removeAddress = (send_address) => ({
     type: 'REMOVE_ADDRESS',
     send_address
 })
+
+export const hasAddress = (hasAddress) => ({
+    type: 'HAS_ADDRESS',
+    hasAddress
+})

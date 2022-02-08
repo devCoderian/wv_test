@@ -9,6 +9,7 @@ import Topbar from '../../Components/Topbar';
 import { useDispatch } from 'react-redux';
 import { sendAddress } from '../../store/actions'
 //import { sendInfo } from '../../store/actions'
+
 const SendAddress = () => {
     
 
@@ -39,7 +40,7 @@ const SendAddress = () => {
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
-              <Topbar logo={true}/>
+              <Topbar />
                 <View style = {styles.content} >
                 <View style = {styles.progress_wrapper}>
                     <View style = {[styles.progress_bar, {

@@ -5,6 +5,7 @@ import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import RNSecureKeyStore from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'
+import PreventBack from '../../Components/PreventBack'
 const MnemonicConfirm = () => {
 
     const [visible, setVisible] = useState(false);
@@ -15,7 +16,7 @@ const MnemonicConfirm = () => {
         falseCount === 3 &&  navigation.navigate('Home');
         isSuceess &&  navigation.navigate('Main');
     };
-
+    PreventBack('Pincode');
     const [words, setWords] = useState([]);
     const [randomWords, setRandomWords] = useState([]);
     const [num, setNum] = useState(0);
@@ -62,7 +63,7 @@ const MnemonicConfirm = () => {
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
-              <Topbar />
+              <Topbar back='Pincode'/>
             <View style = {styles.content} >
                 <View style = {{ marginTop: 40, alignItems: 'center'}} >
                 <Text style = {styles.txt_title}>복구 단어 확인하기</Text>

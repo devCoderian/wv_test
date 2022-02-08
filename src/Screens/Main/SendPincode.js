@@ -8,37 +8,48 @@ import bip39 from 'react-native-bip39';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import { useSelector, useDispatch } from 'react-redux';
 import { removeAddress } from '../../store/actions'
-
+import { useIsFocused } from '@react-navigation/native';
+import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
+import Topbar from '../../Components/Topbar';
 const SendPincode = () => {
-    
+    const [visible, setVisible] = useState(false);
+    const [falseCount, setFalseCount] = useState(0);
+
+    const hideDialog = () => {
+        setVisible(false);
+        falseCount === 3 &&  navigation.navigate('Main');
+        isSuccess && navigation.navigate('Main');
+    };
+
     //보낼때 성공하면 꼭 초기화 해주기!!!!!!!
     const send_address = useSelector((state) => state.send_address);
     const [privkey, setPriveKey] =useState('');
-    // const [address, setAddress] =useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
-    const [balance, setBalance] = useState('')
+    const [add, setAdd] =useState('');
+    const [ balance, setBalance] = useState('')
     const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
-   
-    useEffect(()=> {
-        // RNSecureKeyStore.get('address').then((item) => {
-        //     setAddress(item);
-        //     console.log('address', item)
-        // });
-     
-        // RNSecureKeyStore.get('privkey').then((item) => {
-        //     setPriveKey(item);
-        //     console.log('privkey', item)
-        // });
+    const [resMsg, setResMsg] = useState('송금완료');
 
-        console.log('send_amount', send_amount);
-        console.log('send_fee',send_fee);
+    useEffect(()=> {
+     
+        RNSecureKeyStore.get('privkey').then((item) => {
+            setPriveKey(Buffer.from(item.toString('hex'), "hex"));
+            console.log('privkey', item)
+        });
+
+        // console.log('send_amount', send_amount);
+        // console.log('send_fee',send_fee);
         RNSecureKeyStore.get('balance').then((balance) => {
             setBalance(balance);
             console.log('balance', balance)
         });
-        
+     
+         RNSecureKeyStore.get('address').then((address) => {
+            console.log('address',address)
+            setAdd(address);
+        });
    
       
-    })
+    },[]);
 
     const navigation = useNavigation();
 
@@ -57,18 +68,25 @@ const SendPincode = () => {
     ]
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
+    const [isSuccess, setIsSuceess] = useState(false);
+    useEffect(() => {
+        setPincode(['','','',''])
+    },[falseCount]);
 
-    const goRight = useCallback(() => {
+    const goRight = () => {
         //통신 성공 여부
         const chainId = "groot-14";
         const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
         rizon.setBech32MainPrefix("rizon");
         rizon.setPath("m/44'/118'/0'/0/0");
-        const address = rizon.getAddress('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
-        const ecpairPriv = rizon.getECPairPriv('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
+        // const address = rizon.getAddress('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
+        // const ecpairPriv = rizon.getECPairPriv('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
+        // const address = add;
+        // const add = '';
        
-        console.log(address);
-        rizon.getAccounts(address).then(data => {
+
+        rizon.getAccounts(add).then(data => {
+            console.log(data);
             let stdSignMsg = rizon.newStdMsg({
                 msgs: [
                     {
@@ -80,8 +98,8 @@ const SendPincode = () => {
                                     denom: "uatolo"
                                 }
                             ],
-                            from_address: address,
-                            to_address: "rizon10pqkrq4feec3f6c6unyjhh5rnwnsstq3l38k0d"
+                            from_address: add,
+                            to_address: send_address
                             // to_address: "rizon1rt8u24lxw4hqxecq0gcf7jf99e25kpw2x7yprm"
                         }
                     }
@@ -94,21 +112,24 @@ const SendPincode = () => {
                 sequence: String(data.account.sequence)
             });
         
-            const signedTx = rizon.sign(stdSignMsg, ecpairPriv);
+            const signedTx = rizon.sign(stdSignMsg, privkey);
            
             rizon.broadcast(signedTx).then(() => {
                 try {
-                    console.log('송금 성공 모달 안 Main 넣가')
-                    navigation.navigate('Main');
+                    setIsSuceess(true);
+                    setVisible(true);
                 } catch (error) {
-                    
+                    setResMsg(error);
+                    setIsSuceess(true);
+                    setVisible(true);
+                    console.log(error)
                 }
             });
         })
 
         // useDispatch(removeAddress());
 
-    },[]) 
+    };
 
 
     const makeSecureKey = async (code) => {
@@ -122,9 +143,10 @@ const SendPincode = () => {
 		    console.log(res);
             if(pincode === res){
                 console.log('일치, 니모닉 화면으로 넘어가기');
-               
+                goRight();
             }else{
-                console.log('불일치 이전 페이지 확인..??')
+                setFalseCount((prev) => prev+1);
+                setVisible(true);
             }
 	    }, (err) => {
 		    console.log(err);
@@ -181,10 +203,11 @@ const SendPincode = () => {
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
+            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
                     <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                    <Text style = {styles.txt_subtitle}>지갑 복구 시 사용될  PIN 번호 4자리를 입력해주세요.</Text>
+                    <Text style = {styles.txt_subtitle}>PIN 번호 4자리를 입력해주세요.</Text>
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
@@ -207,6 +230,36 @@ const SendPincode = () => {
                         <Text style= {{color: '#fff'}}>delete</Text>
                 </TouchableOpacity>
             </View>
+            <PaperProvider>
+                <View>
+                    <Portal>
+                    <Dialog visible={visible} onDismiss={hideDialog}>
+                        <View style = {{ marginTop : 50, alignItems: 'center'}}>
+                            {
+                                isSuccess ? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{resMsg}</Text>:
+                                <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
+                            }
+                        {/* <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{resMsg}</Text>
+                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text> */}
+
+                        <TouchableOpacity style = {{
+                            borderRadius:5,
+                            alignItems:'center',
+                            justifyContent: 'center',
+                            marginVertical: 30,
+                            backgroundColor: '#092C47',
+                            width: 100,
+                            height: 40}} onPress={hideDialog}>
+                            <Text style = {{
+                                color: '#fff',
+                                fontFamily: 'Roboto'
+                                }} >확인</Text>
+                            </TouchableOpacity>
+                            </View>
+                    </Dialog>
+                    </Portal>
+                </View>
+            </PaperProvider>
             </ImageBackground>
         </SafeAreaView> 
   );

@@ -149,7 +149,7 @@ const SendInput = () => {
                 behavior={Platform.OS === "ios" ? "padding" : null} 
                 style = {styles.container}>
         <ScrollView >
-              <Topbar logo={true}/>
+              <Topbar />
                 <View style = {styles.content} >
                 <View style = {styles.progress_wrapper}>
                     <View style = {styles.progress_bar}></View>

@@ -5,11 +5,14 @@ import { WithLocalSvg } from 'react-native-svg';
 import TestSvg from '../assets/images/rizonlogo.svg';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native'
-const Topbar = ({ back, logo, title, colorStyle, color='#fff', close = false}) => {
+const Topbar = ({ back = null, logo, title, colorStyle, color='#fff', close = false}) => {
     
     const { t, i18n } = useTranslation();
     const navigation = useNavigation();
     
+    const goNavi = () => {
+        back === null ? navigation.goBack(): navigation.navigate(back);
+    }
     return (
       <View style = {[colorStyle, styles.container]}>
             {logo ?  <WithLocalSvg
@@ -17,7 +20,7 @@ const Topbar = ({ back, logo, title, colorStyle, color='#fff', close = false}) =
                 height={40}
                 fill={"#000000"}
                 asset={TestSvg}
-            /> : <Icon name = 'arrow-left' size={26} color ={color} onPress={() => navigation.goBack()}/>}
+            /> : <Icon name = 'arrow-left' size={26} color ={color} onPress={() =>goNavi()}/>}
             {/* Text는 없는 거 고려해서 디자인 */}
             <View style={styles.center}>
                 <Text style = {styles.text}>{title}</Text>

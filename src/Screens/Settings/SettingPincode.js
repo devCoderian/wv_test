@@ -8,37 +8,9 @@ import bip39 from 'react-native-bip39';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import { useSelector, useDispatch } from 'react-redux';
 import { removeAddress } from '../../store/actions'
-
+import { useIsFocused } from '@react-navigation/native';
 const SettingPincode = () => {
-    
-    //보낼때 성공하면 꼭 초기화 해주기!!!!!!!
-    const send_address = useSelector((state) => state.send_address);
-    const [privkey, setPriveKey] =useState('');
-    // const [address, setAddress] =useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
-    const [balance, setBalance] = useState('')
-    const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
-   
-    useEffect(()=> {
-        // RNSecureKeyStore.get('address').then((item) => {
-        //     setAddress(item);
-        //     console.log('address', item)
-        // });
-     
-        // RNSecureKeyStore.get('privkey').then((item) => {
-        //     setPriveKey(item);
-        //     console.log('privkey', item)
-        // });
-
-        console.log('send_amount', send_amount);
-        console.log('send_fee',send_fee);
-        RNSecureKeyStore.get('balance').then((balance) => {
-            setBalance(balance);
-            console.log('balance', balance)
-        });
-        
-   
-      
-    })
+    const isFocused = useIsFocused(); 
 
     const navigation = useNavigation();
 
@@ -99,9 +71,6 @@ const SettingPincode = () => {
      
     }
 
-
-
-
     const onPressNum = (id) => {
    
       
@@ -111,20 +80,12 @@ const SettingPincode = () => {
                 code[i] = id;
                 setPincode(code);
                 if(i === 3){
-                    // code[i] = id;
-                     // RNSecureKeyStore.set(pincode);
-                    // 4 되면  securestorage 저장 
-                    makeSecureKey(code);
-                    
                 }
                 break;
             }else{
                 continue;
             }
         }
-
-        
-        console.warn(code);
     }
 
     const onDelete = () => {

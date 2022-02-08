@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView, Alert} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
@@ -8,8 +8,8 @@ import Topbar from '../../Components/Topbar'
 import rizonjs from '../../../rizonjs/dist/rizon'
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
-import ProgressBar from '../../Components/ProgressBar'
-const PincodeConfirm = () => {
+
+const RestorePincodeConfirm = () => {
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
 
@@ -17,15 +17,9 @@ const PincodeConfirm = () => {
         setVisible(false);
         falseCount === 3 &&  navigation.navigate('Home');
     };
-    const [progress, setProgress] = useState(false);
-    /*rizonjs*/
-    const chainId = "groot-14";
-    const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
-    rizon.setBech32MainPrefix("rizon");
-    rizon.setPath("m/44'/118'/0'/0/0");
 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('MnemonicInfo'),[]);
+    const goRight = useCallback(() => navigation.navigate('Main'),[]);
 
     let numberId = [
         {id: 1},
@@ -43,34 +37,14 @@ const PincodeConfirm = () => {
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
 
-  
-    const makeAddress = async(mnemonic) => {
-        RNSecureKeyStore.set("address", rizon.getAddress(mnemonic), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        .then(()=> {
-            RNSecureKeyStore.set("privkey", rizon.getECPairPriv(mnemonic).toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-            .then(()=> {
-                goRight(); 
-            });
-        });
-        // hex code 원복 방법
-        // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
-    }
 
     const makeSecureKey = async (code) => {
-        setProgress(true);
+        
         const pincode = code.join('');
         RNSecureKeyStore.get("pincode").then((res) => {
             if(pincode === res){
                 console.log('일치');
-                bip39.generateMnemonic().then((res) => {
-                    RNSecureKeyStore.set("mnemonic", res , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-                    .then(() => {
-                        makeAddress(res);
-                    }, (err) => {
-                        setProgress(false);
-                        Alert.alert(err);
-                    });
-                  });
+                goRight();
             }else{
                 console.log('불일치')
                 setFalseCount((prev) => prev+1);
@@ -125,16 +99,9 @@ const PincodeConfirm = () => {
     },[falseCount]);
 
     return(
-        <>
-        {/* <View style ={[styles.absoluteView1]}>
-        </View>
-        <View style ={[styles.absoluteView2]}>
-            <Progress.CircleSnail  size={180} indeterminate={true} />
-        </View> */}
-        {progress && <ProgressBar />}
         <SafeAreaView style = {styles.container}>
         <ImageBackground style ={styles.image_bg} source ={BG}>
-        <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'}  back='Home'/>
+        <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
         <View style = {styles.input_box}>
             <View style = {styles.txt_container}>
                 <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
@@ -171,7 +138,7 @@ const PincodeConfirm = () => {
                     </Dialog>
                     </Portal>
                 </View>
-            </PaperProvider>
+                </PaperProvider>
         </View>
             <View style = {styles.number_container}>
                 {number.map((item) =>{
@@ -187,29 +154,14 @@ const PincodeConfirm = () => {
             </TouchableOpacity>
         </ImageBackground>
     </SafeAreaView> 
-    </>
   );
         
 };
+
 const styles = StyleSheet.create({
     container:{
         flex: 1,
     },
-    absoluteView1:{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        zIndex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)'
-        
-    },  
-    absoluteView2:{
-        position: 'absolute',
-        zIndex: 2,
-        right: 120,
-        bottom: 330
-        
-    },  
     image_bg:{
       flex: 1,
       alignItems: 'center',
@@ -307,5 +259,4 @@ const styles = StyleSheet.create({
         top: -45
     }
     });
-
-export default PincodeConfirm;
+export default RestorePincodeConfirm;

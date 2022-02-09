@@ -10,15 +10,16 @@ import Topbar from '../../Components/Topbar';
 import moment from "moment-timezone"
 import { useIsFocused, useFocusEffect} from '@react-navigation/native';
 import ProgressBar from '../../Components/ProgressBar';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Main = () => {
     const isFocused = useIsFocused(); 
     const navigation = useNavigation();
+    const { t, i18n } = useTranslation();
     const goRight = () =>{ 
-        isSend ? navigation.navigate('SendAddress') : Alert.alert('송금할 수 있는 토큰이 없습니다.')
+        isSend ? navigation.navigate('SendAddress') : Alert.alert(t('main_result'))
     };
     const [progress, setProgress] = useState(false);
-    const { t, i18n } = useTranslation();
     const chainId = "groot-14";
     const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
     rizon.setBech32MainPrefix("rizon");
@@ -83,7 +84,13 @@ const Main = () => {
                 onPress: ()=> null,
                 style:"cancel" },
               { text:"네",
-                onPress: ()=> {BackHandler.exitApp()}}
+                onPress: ()=> {
+                    AsyncStorage.setItem('lang', i18n.language ).then((res) => {
+                        console.log(res)
+                        BackHandler.exitApp();
+                   });
+                    BackHandler.exitApp()
+                }}
             ]);
             return true;
           }
@@ -138,7 +145,7 @@ const Main = () => {
                 </View>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
-                    <Text style = {styles.confirm_txt}>{t('msg3')}</Text>
+                    <Text style = {styles.confirm_txt}>{t('send_btn')}</Text>
                     </TouchableOpacity>
                 </View>
                 <ScrollView style={styles.list_box_container}>
@@ -167,13 +174,13 @@ const Main = () => {
                                                 <Text style={{color: '#fff'}}>
                                                 {item.data.tx.body.messages[0].amount[0].amount/1000000} atolo
                                                 </Text>
-                                                {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>실패</Text>: null
+                                                {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>{t('main_fail')}</Text>: null
                                               }                        
                                             </View>
                                             )                         
                                         })
                                         :<View style={styles.list_box} >
-                                            <Text style={{color: '#fff'}}>조회 결과가 없습니다.</Text>
+                                            <Text style={{color: '#fff'}}>{t('main_result')}</Text>
                                         </View>    
                                           
                                         }

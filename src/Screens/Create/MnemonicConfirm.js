@@ -66,11 +66,11 @@ const MnemonicConfirm = () => {
               <Topbar back='Pincode'/>
             <View style = {styles.content} >
                 <View style = {{ marginTop: 40, alignItems: 'center'}} >
-                <Text style = {styles.txt_title}>복구 단어 확인하기</Text>
-                <Text style = {styles.txt_subtitle}>복구 단어의 순서를 맞추세요.</Text>
+                <Text style = {styles.txt_title}>{t('mnemonic_confirm_title')}</Text>
+                <Text style = {styles.txt_subtitle}>{t('mnemonic_confirm_subtitle_1')}</Text>
                 <Text style = {[styles.txt_subtitle, {
                      marginTop: 5
-                }]}>*틀릴 경우 전 화면으로 돌아가 다시 한번 확인하세요.</Text>
+                }]}>{t('mnemonic_confirm_subtitle_2')}</Text>
                 </View>
                 <View style = {styles.word_list_wrapper}>
                     {randomWords.map((item, idx) => {
@@ -89,11 +89,11 @@ const MnemonicConfirm = () => {
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <View style = {{ marginTop : 50, alignItems: 'center'}}>
                         {   
-                            isSuceess? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>지갑이 생성되었습니다.</Text>
+                            isSuceess? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('mnemonic_succeess')}</Text>
                             :(
                                 <>
-                                    <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>순서가 틀렸습니다.({falseCount}/3)</Text>
-                                    <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>다시 한번 확인해주세요.</Text>
+                                    <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('mnemonic_false')}({falseCount}/3)</Text>
+                                    <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('mnemonic_confirm_warning')}</Text>
                                 </>
                             )
                         }

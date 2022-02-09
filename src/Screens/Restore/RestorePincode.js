@@ -1,12 +1,16 @@
 import React, { useCallback, useState, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
-//pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+
 const Pincode = () => {
+
+    const {t} = useTranslation();
+
     const isFocused = useIsFocused(); 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('RestorePincodeConfirm'),[]);
@@ -75,8 +79,8 @@ const Pincode = () => {
             <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
-                    <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                    <Text style = {styles.txt_subtitle}>지갑 복구 시 사용될  PIN 번호 4자리를 입력해주세요.</Text>
+                    <Text style = {styles.txt_title}>{t('pincode_title')}</Text>
+                    <Text style = {styles.txt_subtitle}>{t('pincode_subtitle')}</Text>
                 </View>
                 <View style = {styles.code_wrapper}>
                     {

@@ -1,13 +1,12 @@
 import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, Alert, Image, ScrollView, ScrollViewBase} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, Alert, ScrollView, ScrollViewBase} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { RadioButton, List  } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 const Setting = ({ route }) => {
@@ -26,10 +25,6 @@ const Setting = ({ route }) => {
        
     }
     const [word, setWord] = useState([]);
-    useEffect(() => {
-        setChecked('en');
-    },[]);  
-
     useEffect(()=>{
         console.log('check')
         if(route.params !== undefined){
@@ -50,11 +45,12 @@ const Setting = ({ route }) => {
         });
     },[isFocused]);
     
-    const lang = useSelector((state) => state.language);
-    const [checked, setChecked] = useState(lang);
+    //const lang = useSelector((state) => state.language);
     const { t, i18n } = useTranslation();
+    const [checked, setChecked] = useState(i18n.language);
+    
     useEffect(() => {
-        console.log(checked)
+        console.log(checked);
         checked === 'ko' ?  i18n.changeLanguage('ko') :i18n.changeLanguage('en');
     },[checked, isFocused]); 
 
@@ -67,7 +63,8 @@ const Setting = ({ route }) => {
             setIsExpanded(false);
         };
        }else{
-        Alert.alert('먼저 지갑을 생성하거나 복구해주세요.')
+        const warn = t('setting_alert');
+        Alert.alert(warn);
        }
     };
 
@@ -94,16 +91,16 @@ const Setting = ({ route }) => {
               <View style = {styles.content} >
                 
                 <View style={{ marginTop:20}}>
-                    <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
+                    <Text style = {{color: '#fff'}}>{t('setting_title_1')}</Text>
                         <View style = {styles.confirmBtn} >
-                            <Text style = {styles.confirm_txt}>Laguage</Text>
-                            <Text style = {styles.confirm_txt}>{t('lang1')}</Text>
+                            <Text style = {{color: '#fff'}}>{t('setting_lang')}</Text>
+                            <Text style = {styles.confirm_txt}>{t('setting_ko')}</Text>
                                 <RadioButton
                                 value="ko"
                                 status={ checked === 'ko' ? 'checked' : 'unchecked' }
                                 onPress={() => setChecked('ko')}
                                  />
-                            <Text style = {styles.confirm_txt}>{t('lang2')}</Text>
+                            <Text style = {styles.confirm_txt}>{t('setting_en')}</Text>
                                 <RadioButton
                                 value="en"
                                 status={ checked === 'en' ? 'checked' : 'unchecked' }
@@ -113,18 +110,18 @@ const Setting = ({ route }) => {
                     </View>
                         <View style = {styles.content} >
                                 <View style={{ marginVertical:5}}>
-                                <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
+                                <Text style = {{color: '#fff'}}>{t('setting_title_2')}</Text>
                                 <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}>
-                                <Text style = {{color: '#fff'}}>비밀번호 복구 단어 찾기</Text>
+                                <Text style = {{color: '#fff'}}>{t('setting_word')}</Text>
                                     <Icon name = {isExpanded ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
                                 </TouchableOpacity>
                             
                                 {isExpanded ? mnem() : null}
                             </View>
                             <View style={{ marginVertical:5}}>
-                                <Text style = {{color: '#fff'}}>초기화</Text>
+                                <Text style = {{color: '#fff'}}>{t('setting_title_3')}</Text>
                                 <TouchableOpacity style = {styles.confirmBtn} onPress={()=> init()}>
-                                <Text style = {{color: '#fff'}}>초기화</Text>
+                                <Text style = {{color: '#fff'}}>{t('setting_title_3')}</Text>
                                     <Icon name = 'arrow-down' size={26} color ='#fff'/>
                                 </TouchableOpacity>
                             </View>

@@ -1,9 +1,48 @@
 {
-    "lang": "한/영 ",
-    "msg1":"지갑 생성하기",
-    "msg2":"지갑 복구하기",
-    "msg3": "송금",
-    "lang_title" : "다국어 변환",
-    "lang1": "한",
-    "lang2": "영"
+    "setting_title_1": "다국어 변환",
+    "setting_lang": "언어",
+    "setting_ko": "한",
+    "setting_en": "영",
+    "setting_title_2": "비밀번호 복구 단어 찾기", 
+    "setting_word": "비밀번호 복구 단어", 
+    "setting_title_3": "초기화",
+    "setting_alert": "먼저 지갑을 생성하거나 복구해주세요.",
+
+    "home_title":"RIZON WALLET",
+    "home_subtitle":"암호화폐 지갑 애플리케이션인 rizon wallet에서 Atolo에서 관리해보세요.",
+    "home_btn1": "지갑 생성하기",
+    "home_btn2": "지갑 복구하기",
+
+    "pincode_title": "핀번호를 입력해주세요",
+    "pincode_subtitle": "지갑 복구 시 사용될 핀번호 4자리를 입력해주세요.",
+    "pincode_confirm_subtitle": "한번 더 입력해주세요.",
+    "pincode_warning": "핀번호가 일치하지 않습니다.",
+
+    "mnemonic_title":"비밀번호 백업 복구 단어",
+    "mnemonic_subtitle_1":"12개의 단어를 종이에 적거나 사진을 찍어 보관하세요.",
+    "mnemonic_subtitle_2":"* 지갑 복구 시 사용됩니다.",
+    "mnemonic_warning":"유효하지 않은 단어입니다. 다시 입력해주세요.",
+    "mnemonic_confirm_btn": "확인",
+
+    "mnemonic_recovery_title":"복구 단어 확인하기",
+    "mnemonic_recovery_subtitle_1": "복구 단어의 순서를 맞춰주세요.",
+    "mnemonic_recovery_subtitle_2": "* 틀릴 경우 전 화면으로 돌아가 다시 한번 확인하세요.",
+    
+    "mnemonic_succeess": "지갑이 생성되었습니다.",
+    "mnemonic_false": "순서가 틀렸습니다.",
+    "mnemonic_recovery_warning":"다시 한번 확인해주세요.",
+
+    
+    "main_warning":"송금할 수 있는 토큰이 없습니다.",
+    "main_result":"조회 결과가 없습니다.",
+    "main_success":"성공", 
+    "main_fail":"실패" ,
+
+    "send_title":"수취인 주소",
+    "send_subtitle":"수취인 주소를 입력하세요.",
+    "send_warning": "주소를 입력해주세요.",
+    "send_btn": "송금"
+
+
+
 }

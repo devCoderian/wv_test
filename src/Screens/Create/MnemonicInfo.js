@@ -6,8 +6,11 @@ import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 // const data = ['damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast','damage', 'clog', 'aler', 'hurt', 'fork',  'purchase', 'iron', 'cotton', 'apple' ,'buffalo','survey','vast'];
 import Topbar from '../../Components/Topbar'
 import PreventBack from '../../Components/PreventBack'
+import { useTranslation } from 'react-i18next';
+
 const MnemonicInfo  = () => {
 
+    const {t} = useTranslation();
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('MnemonicConfirm'),[]) 
     const [word, setWord] = useState([]);
@@ -29,9 +32,9 @@ const MnemonicInfo  = () => {
                 <Topbar back='Pincode' />
                 <View style = {styles.content} >
                     <View style = {{ marginTop: 40, alignItems: 'center'}} >
-                        <Text style = {styles.txt_title}>비밀번호 백업 복구 단어</Text>
-                        <Text style = {styles.txt_subtitle}>12개의 단어를 종이에 적거나 사진을 찍어 보관하세요.</Text>
-                        <Text style = {styles.txt_subtitle}>* 지갑 복구 시 사용됩니다.</Text>
+                        <Text style = {styles.txt_title}>{t('mnemonic_title')}</Text>
+                        <Text style = {styles.txt_subtitle}>{t('mnemonic_subtitle_1')}</Text>
+                        <Text style = {styles.txt_subtitle}>{t('mnemonic_subtitle_2')}</Text>
                     </View>
                 <View style = {styles.word_list_wrapper}>
                     {word.map((item) => {
@@ -46,7 +49,7 @@ const MnemonicInfo  = () => {
                 </View>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={goRight}>
-                    <Text style = {styles.confirm_txt}>확인하기</Text>
+                    <Text style = {styles.confirm_txt}>{t('mnemonic_confirm_btn')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

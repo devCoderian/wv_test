@@ -1,9 +1,48 @@
 {
-    "lang": "ko/en",
-    "msg1":"create wallet",
-    "msg2":"restore wallet",
-    "msg3": "send",
-    "lang1": "ko",
-    "lang2": "en",
-    "lang_title" : "language check"
+    
+    "setting_title_1": "Multilingual Conversion",
+    "setting_lang": "Laguage",
+    "setting_ko": "ko",
+    "setting_en": "en",
+    "setting_title_2": "Find the password recovery word", 
+    "setting_word": "password recovery words", 
+    "setting_title_3": "initialization",
+    "setting_alert": "Please create or restore a wallet first.",
+
+    
+    "home_title":"RIZON WALLET",
+    "home_subtitle":"Manage it in Atolo in rizon wallet, a cryptocurrency wallet application",
+    "home_btn1": "create wallet",
+    "home_btn2": "restore wallet", 
+
+    
+    "pincode_title": "Enter Your PIN Code",
+    "pincode_subtitle": "Enter the 4-digit PIN number when recovering your wallet.",
+    "pincode_confirm_subtitle": "Please enter it again.",
+    "pincode_warning": "The pin numbers do not match.",
+
+    
+    "mnemonic_title":"Backup recovery word",
+    "mnemonic_subtitle_1":"Write the 12 words take a photo to keep.",
+    "mnemonic_subtitle_2":"* Used for wallet recovery.",
+    "mnemonic_warning":"Invalid word. Please re-enter",
+    "mnemonic_confirm_btn": "Confirm",
+
+    "mnemonic_confirm_title":"Check the recovery word",
+    "mnemonic_confirm_subtitle_1": "Please match the order of the recovery words.",
+    "mnemonic_confirm_subtitle_2": "* If incorrect, go back and check again.",
+
+    "mnemonic_succeess": "Your wallet has been created.",
+    "mnemonic_false": "The order is wrong.",
+    "mnemonic_confirm_warning":"Please check again.",
+
+    "main_warning":"There are no transferable tokens.",
+    "main_result":"No search results.",
+    "main_success":"success", 
+    "main_fail":"fail",
+
+    "send_title":"consignee address",
+    "send_subtitle":"Please enter the recipient's address.",
+    "send_warning": "Please enter your address.",
+    "send_btn": "SEND"
 }

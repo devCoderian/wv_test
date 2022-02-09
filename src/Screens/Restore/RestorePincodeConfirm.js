@@ -3,13 +3,15 @@ import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackgroun
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 , {wordlists} from 'react-native-bip39';
 import Topbar from '../../Components/Topbar'
-import rizonjs from '../../../rizonjs/dist/rizon'
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const RestorePincodeConfirm = () => {
+    
+    const {t} = useTranslation();
+    
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
 
@@ -103,8 +105,8 @@ const RestorePincodeConfirm = () => {
         <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
         <View style = {styles.input_box}>
             <View style = {styles.txt_container}>
-                <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                <Text style = {styles.txt_subtitle}>한번 더 입력해주세요.</Text>
+                <Text style = {styles.txt_title}>{t('pincode_title')}</Text>
+                <Text style = {styles.txt_subtitle}>{t('pincode_confirm_subtitle')}</Text>
             </View>
             <View style = {styles.code_wrapper}>
                 {
@@ -119,7 +121,7 @@ const RestorePincodeConfirm = () => {
                     <Portal>
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <View style = {{ marginTop : 50, alignItems: 'center'}}>
-                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
+                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('pincode_warning')}{falseCount}/3</Text>
                         <TouchableOpacity style = {{
                             borderRadius:5,
                             alignItems:'center',
@@ -131,7 +133,7 @@ const RestorePincodeConfirm = () => {
                             <Text style = {{
                                 color: '#fff',
                                 fontFamily: 'Roboto'
-                                }} >확인</Text>
+                                }} >{t('mnemonic_confirm_btn')}</Text>
                             </TouchableOpacity>
                             </View>
                     </Dialog>

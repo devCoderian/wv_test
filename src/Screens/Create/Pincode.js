@@ -5,8 +5,11 @@ import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+
 const Pincode = () => {
 
+    const {t} = useTranslation();
     const isFocused = useIsFocused(); 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('PincodeConfirm'),[]);
@@ -75,8 +78,8 @@ const Pincode = () => {
             <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} back='Home'/>
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
-                    <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                    <Text style = {styles.txt_subtitle}>지갑 복구 시 사용될  PIN 번호 4자리를 입력해주세요.</Text>
+                    <Text style = {styles.txt_title}>{t('pincode_title')}</Text>
+                    <Text style = {styles.txt_subtitle}>{t('pincode_subtitle')}</Text>
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
@@ -118,8 +121,9 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     txt_container:{
-        marginTop: 50,
-        alignItems:'center'
+        width: 350,
+        marginTop: 30,
+        alignItems:'center',
     },
     txt_title: {
         width: 250,
@@ -130,6 +134,7 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     txt_subtitle: {
+        textAlign: 'center',
         fontSize: 15,
         fontWeight: '400',
         lineHeight: 25, 
@@ -200,8 +205,8 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     delete_btn: {
-        left: 95,
-        top: -45
+        left: 101,
+        top: -90
     }
     });
 

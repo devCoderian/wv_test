@@ -7,8 +7,10 @@ import Topbar from '../../Components/Topbar';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import bip39 , {wordlists} from 'react-native-bip39';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 const MnemoinicInput = () => {
 
+    const {t} = useTranslation();
     const navigation = useNavigation();
     const isFocused = useIsFocused(); 
     let numberId = [
@@ -33,37 +35,28 @@ const MnemoinicInput = () => {
     const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
     rizon.setBech32MainPrefix("rizon");
     rizon.setPath("m/44'/118'/0'/0/0");
-    // const [text, setText] = useState([]);
-    useEffect(() => {
-        // allClear()
-    },[isFocused])
-     
-    
-    const [check, setCheck] =useState('');
+
     const checkMnemonic = () => { 
       
         if (!bip39.validateMnemonic(inputArray.join(' '))){
-            Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
+            Alert.alert(t('mnemonic_warning'));
             setNumArray(numberId);
+        }else{
+            makeAddress(inputArray.join(' '));
+       
+            RNSecureKeyStore.set("mnemonic", inputArray.join(' '), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+            .then((res)=> {
+                console.log('니모닉 저장', res)
+                navigation.navigate('RestorePincode')
+            },(err) => { 
+                console.log(err);
+            })      
         }
       
-        makeAddress(inputArray.join(' '));
-       
-        RNSecureKeyStore.set("mnemonic", inputArray.join(' '), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        .then((res)=> {
-            console.log('니모닉 저장', res)
-            navigation.navigate('RestorePincode')
-        },(err) => { 
-            Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
-            
-            //navigation.navigate('MnemonicInput')
-            //setInputArray(['','','','','','','','','','','','']);
-        })
 
        
     }
 
-    
     //"ghost grape embody hover salon session mirror cattle decrease pair peace visa"
     const makeAddress = async(mnemonic) => {
         console.log('mnemonic',inputArray.join(' '));
@@ -85,18 +78,10 @@ const MnemoinicInput = () => {
     }
 
     const onChangeMnemonic = (idx, value) => { 
-        //문자열 공백 제거 정규식
-        //setInputText(text.replace(/(\s*)/g, ""));
-        // let items = [...numArray];
-        // let item = {
-        //     ...items[idx],
-        //     text: value.trim()
-        // }
         setNumArray([...numArray], {...numArray[idx].text = value})
         let word = [...inputArray];
         for(let i = 1; i<13; i++){
             word[idx]= value.trim();
-          
         }
       
         console.log([...word].join(' '));
@@ -109,7 +94,7 @@ const MnemoinicInput = () => {
                   <Topbar />
             <View style = {styles.content} >
                 <View style = {{ marginTop: 40, alignItems: 'center'}} >
-                <Text style = {styles.txt_title}>비밀번호 백업 복구 단어</Text>
+                <Text style = {styles.txt_title}>{t('mnemonic_title')}</Text>
                 </View>
                 <View style = {styles.word_list_wrapper}>
                 {
@@ -125,14 +110,6 @@ const MnemoinicInput = () => {
                         )
                             })
                 }
-                    {/* <TextInput style={styles.word}
-                    multiline={true}
-                    placeholder='메모했던 비밀번호 복구 단어 24개를 순서대로 입력하세요.'
-                    placeholderTextColor = "#CECECE"
-                    onChangeText={(text) => onChangeMnemonic(text)}
-                    onFocus={() => console.log('onFocus')}
-                    onBlur={() => console.log('onBlur')}
-                    onEndEditing={() => console.log('onEndEditing')} /> */}
                 </View>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={() => checkMnemonic()}>

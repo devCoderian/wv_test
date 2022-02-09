@@ -2,13 +2,11 @@ import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Alert, Image, ScrollView, KeyboardAvoidingView} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { useDispatch } from 'react-redux';
 import { sendInfo } from '../../store/actions'
-import { onChange } from 'react-native-reanimated';
 
 const SendInput = () => {
 
@@ -48,19 +46,19 @@ const SendInput = () => {
             console.log(afterStr[0]);
             console.log(afterStr[1]);
             if(afterStr[0].length > 5){
-                Alert.alert('6자리 이상으로 사용X')
+                // Alert.alert('6자리 이상으로 사용X')
                 setAmount((prev) => prev)
             }else if(afterStr[1].length > 5){
-                Alert.alert('6자리 이상으로 사용X')
+                // Alert.alert('6자리 이상으로 사용X')
                 setAmount((prev) => prev)
             }
         }else{
-            send_amount.toString().length > 5 &&  Alert.alert('6자리 이상으로 사용X')
+            send_amount.toString().length > 5 &&   setAmount((prev) => prev)//Alert.alert('6자리 이상으로 사용X')
         }
         
       
             if((parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)> maxAmount){
-                Alert.alert('최대 수량이상을 입금할 수 없습니다.');
+                Alert.alert(t('send_amount_warning'));
                 setAmount(0);
             }else{
                 setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
@@ -70,7 +68,6 @@ const SendInput = () => {
     const onChange = (num) => {
         switch (num) {
             case '0.1':
-                //(Math.round((a + b) * 10) / 10)
                 //atolo -> 6자리 제한 가능
               setAmount((prev) => (parseFloat(prev)*1000000 + 0.1*1000000)/1000000);
             //   parseInt(send_amount)/1000000
@@ -190,26 +187,21 @@ const SendInput = () => {
                 <View style = {[styles.amount_wrapper, {
                 height:80
                 }]}>
-                    {/* <KeyboardAvoidingView style = {{flex:1}}> */}
                     <TextInput style={styles.word}
                     multiline={true}
                     placeholderTextColor = "#CECECE"
                     onChangeText={(text) => setMemo(text)}
                     value={send_memo}
                     />
-                    {/* </KeyboardAvoidingView> */}
                 </View>
                 
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={onNext}>
                     <Text style = {styles.confirm_txt}>Next</Text>
                     <Icon name = 'arrow-right' size={26} color='#fff'/>
-                    {/* <Icon name = 'Home' size={20} color='#fff' /> */}
                     </TouchableOpacity>
                 </View>
             </View>
-            
-    {/* </KeyboardAvoidingView> */}
     </ScrollView>
 
     </KeyboardAvoidingView>

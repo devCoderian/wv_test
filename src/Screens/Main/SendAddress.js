@@ -20,7 +20,7 @@ const SendAddress = () => {
     const goRight = useCallback(() => {
         console.log(send_address); 
         if(send_address === ''){
-           Alert.alert('주소를 입력해주세요.')
+           Alert.alert(t('send_warning'))
         }else{
            dispatch(sendAddress(send_address.trim()));
            navigation.navigate('SendInput')
@@ -41,7 +41,7 @@ const SendAddress = () => {
                     <View style = {styles.progress_bar}></View>                
                 </View>
                 <View style = {{ marginTop: 40}} >
-                    <Text style = {styles.txt_subtitle}>수취인 주소</Text>
+                    <Text style = {styles.txt_subtitle}>{t('send_title')}</Text>
                     {/* <Text style = {{color: '#fff'}}>주소</Text> */}
                 </View>
                 <View style = {styles.address_wrapper}>
@@ -50,7 +50,7 @@ const SendAddress = () => {
                         <TextInput style={styles.txt_subtitle}
                         // multiline={true}
                         placeholderTextColor = "#fff"
-                        placeholder='수취인 주소를 입력하세요.'
+                        placeholder={t('send_subtitle')}
                         onChangeText={(text) => setAddress(text)}
                         
                     />

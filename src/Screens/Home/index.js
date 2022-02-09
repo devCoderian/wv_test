@@ -5,12 +5,13 @@ import BG from '../../../src/assets/images/bg_2.png';
 import MAIN from '../../../src/assets/images/spaceship.png';
 import Topbar from '../../Components/Topbar';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useIsFocused } from '@react-navigation/native';
-const Home = ({route}) => {
-    const navigation = useNavigation();
+import AsyncStorage from '@react-native-community/async-storage';
 
+const Home = () => {
+    const navigation = useNavigation();
+    
     const goRight = useCallback(() => navigation.navigate('Pincode'),[]) ;
     const goRestore = useCallback(() => navigation.navigate('MnemonicInput'),[]);
 
@@ -58,7 +59,13 @@ const Home = ({route}) => {
                 onPress: ()=> null,
                 style:"cancel" },
               { text:"네",
-                onPress: ()=> {BackHandler.exitApp()}}
+                onPress: ()=> {
+                    AsyncStorage.setItem('lang', i18n.language ).then((res) => {
+                             console.log(res)
+                             BackHandler.exitApp();
+                        });
+                   
+                }}
             ]);
             return true;
           }
@@ -66,41 +73,21 @@ const Home = ({route}) => {
         return () => backHandler.remove()
         },[])
       )
-    // useEffect(() => {
-    //     const backAction = () => {
-    //     if( route.name == 'Home'){
-    //       Alert.alert("Hold on!", "앱을 종료하시겠습니까?", [
-    //         {
-    //           text: "취소",
-    //           onPress: () => null,
-    //         },
-    //         { text: "확인", onPress: () =>  BackHandler.exitApp()}
-    //       ]);
-    //       return true;
-    //     };
-    //     }
-    //     const backHandler = BackHandler.addEventListener(
-    //       "hardwareBackPress",
-    //       backAction
-    //     );
-    //     return () => backHandler.remove();
-    //   }, []);
-    
 
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
                 <Topbar logo={true}/>
                 <View style = {styles.contents}>
-                    <Text style = {styles.txt_title}>RIZON WALLET</Text>
+                    <Text style = {styles.txt_title}>{t('home_title')}</Text>
                     <Image style = {styles.image_main}source = {MAIN} /> 
-                    <Text style = {styles.txt_subtitle}>Lorem Ipsum is simply dummy text of the printing and type</Text>
+                    <Text style = {styles.txt_subtitle}>{t('home_subtitle')}</Text>
                     <View styles = {styles.btn_container}>
                         <TouchableOpacity style = {styles.btn_create} onPress = {goRight}>
-                            <Text style ={{  color: '#fff', textAlign: 'center'}}>{t('msg1')}</Text>
+                            <Text style ={{  color: '#fff', textAlign: 'center'}}>{t('home_btn1')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style = {styles.btn_restore} onPress = {goRestore}>
-                            <Text style ={{  color: '#fff', textAlign: 'center'}}>{t('msg2')}</Text>
+                            <Text style ={{  color: '#fff', textAlign: 'center'}}>{t('home_btn2')}</Text>
                         </TouchableOpacity>
                     </View> 
                 </View>

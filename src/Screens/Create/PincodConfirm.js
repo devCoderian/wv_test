@@ -9,7 +9,11 @@ import rizonjs from '../../../rizonjs/dist/rizon'
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 import ProgressBar from '../../Components/ProgressBar'
+import { useTranslation } from 'react-i18next';
+
 const PincodeConfirm = () => {
+
+    const {t} = useTranslation();
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
 
@@ -126,19 +130,14 @@ const PincodeConfirm = () => {
 
     return(
         <>
-        {/* <View style ={[styles.absoluteView1]}>
-        </View>
-        <View style ={[styles.absoluteView2]}>
-            <Progress.CircleSnail  size={180} indeterminate={true} />
-        </View> */}
         {progress && <ProgressBar />}
         <SafeAreaView style = {styles.container}>
         <ImageBackground style ={styles.image_bg} source ={BG}>
         <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'}  back='Home'/>
         <View style = {styles.input_box}>
             <View style = {styles.txt_container}>
-                <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                <Text style = {styles.txt_subtitle}>한번 더 입력해주세요.</Text>
+                <Text style = {styles.txt_title}>{t('pincode_title')}</Text>
+                <Text style = {styles.txt_subtitle}>{t('pincode_confirm_subtitle')}</Text>
             </View>
             <View style = {styles.code_wrapper}>
                 {
@@ -153,7 +152,7 @@ const PincodeConfirm = () => {
                     <Portal>
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <View style = {{ marginTop : 50, alignItems: 'center'}}>
-                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
+                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('pincode_warning')}{falseCount}/3</Text>
                         <TouchableOpacity style = {{
                             borderRadius:5,
                             alignItems:'center',
@@ -221,8 +220,9 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     txt_container:{
-        marginTop: 50,
-        alignItems:'center'
+        width: 350,
+        marginTop: 30,
+        alignItems:'center',
     },
     txt_title: {
         width: 250,
@@ -236,7 +236,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '400',
         lineHeight: 25, 
-        color: '#000'
+        color: '#000',
+        textAlign: 'center',
     },
     code_wrapper:{
         marginTop:  37,
@@ -303,8 +304,8 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     delete_btn: {
-        left: 95,
-        top: -45
+        left: 101,
+        top: -90
     }
     });
 

@@ -16,22 +16,13 @@ const SendAddress = () => {
     const [send_address, setAddress] = useState('');
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    // const goRight = useCallback(() => {
-    //  console.log(send_address); 
-    //  if(send_address === ''){
-    //     Alert.alert('주소를 입력해주세요.')
-    //  }else{
-    //     dispatch(sendInfo({send_address}))
-    //     navigation.navigate('SendInput')
-    //  } 
-    // },[send_address]) 
 
     const goRight = useCallback(() => {
         console.log(send_address); 
         if(send_address === ''){
            Alert.alert('주소를 입력해주세요.')
         }else{
-           dispatch(sendAddress(send_address));
+           dispatch(sendAddress(send_address.trim()));
            navigation.navigate('SendInput')
         } 
        },[send_address]) 
@@ -78,8 +69,6 @@ const SendAddress = () => {
     </View>
     )
 }
-
-
 
 const styles = StyleSheet.create({
     container:{

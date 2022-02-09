@@ -1,4 +1,4 @@
-import React ,{ useState, useCallback, useEffect} from 'react';
+import React ,{ useState, useCallback, useEffect, useRef} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, RefreshControl, Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
@@ -6,57 +6,45 @@ import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Topbar from '../../Components/Topbar';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import bip39 , {wordlists} from 'react-native-bip39';
+import { useIsFocused } from '@react-navigation/native';
 const MnemoinicInput = () => {
 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('RestorePincode'),[]) 
-    
+    const isFocused = useIsFocused(); 
     let numberId = [
-        {id: 1},
-        {id: 2},
-        {id: 3},
-        {id: 4},
-        {id: 5},
-        {id: 6},
-        {id: 7},
-        {id: 8},
-        {id: 9},
-        {id: 10},
-        {id: 11},
-        {id: 12},
+        {id: 1, text: ''},
+        {id: 2, text: ''},
+        {id: 3, text: ''},
+        {id: 4, text: ''},
+        {id: 5, text: ''},
+        {id: 6, text: ''},
+        {id: 7, text: ''},
+        {id: 8, text: ''},
+        {id: 9, text: ''},
+        {id: 10, text: ''},
+        {id: 11, text: ''},
+        {id: 12, text: ''},
     ]
     const [numArray, setNumArray] = useState(numberId);
     const [inputArray, setInputArray] = useState(['','','','','','','','','','','','']);
-    const [inputText, setInputText] = useState('');
-    // const [inputText, setInputText] = useState('leftmergeaugustenemysadnesshumandiagramproofwildeagleshootbetterboardhumorwordmediamotorfirmzebraindicateflockthingtrialprotect');
-    //const [mnemonic, setMnemonic] = useState("left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect");
-
   
     /*rizonjs*/
     const chainId = "groot-14";
     const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
     rizon.setBech32MainPrefix("rizon");
     rizon.setPath("m/44'/118'/0'/0/0");
-        
+    // const [text, setText] = useState([]);
+    useEffect(() => {
+        // allClear()
+    },[isFocused])
+     
     
-    const onChangeMnemonic = (idx, text) => { 
-        //문자열 공백 제거 정규식
-        //setInputText(text.replace(/(\s*)/g, ""));
-        let word = [...inputArray];
-        for(let i = 0; i<12; i++){
-            word[idx]= text.trim();
-        }
-      
-        console.log([...word].join(' '));
-        setInputArray([...word]);
-    }
-    
-
     const [check, setCheck] =useState('');
     const checkMnemonic = () => { 
       
         if (!bip39.validateMnemonic(inputArray.join(' '))){
             Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
+            setNumArray(numberId);
         }
       
         makeAddress(inputArray.join(' '));
@@ -64,15 +52,19 @@ const MnemoinicInput = () => {
         RNSecureKeyStore.set("mnemonic", inputArray.join(' '), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
         .then((res)=> {
             console.log('니모닉 저장', res)
+            navigation.navigate('RestorePincode')
         },(err) => { 
             Alert.alert('유효하지 않은 단어입니다. 다시 입력해주세요.');
-            // navigation.navigate('MnemonicInput')
+            
+            //navigation.navigate('MnemonicInput')
             //setInputArray(['','','','','','','','','','','','']);
         })
 
        
     }
-    //ghost grape embody hover salon session mirror cattle decrease pair peace visa
+
+    
+    //"ghost grape embody hover salon session mirror cattle decrease pair peace visa"
     const makeAddress = async(mnemonic) => {
         console.log('mnemonic',inputArray.join(' '));
         const add = rizon.getAddress(mnemonic);
@@ -92,7 +84,25 @@ const MnemoinicInput = () => {
         // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
     }
 
-    
+    const onChangeMnemonic = (idx, value) => { 
+        //문자열 공백 제거 정규식
+        //setInputText(text.replace(/(\s*)/g, ""));
+        // let items = [...numArray];
+        // let item = {
+        //     ...items[idx],
+        //     text: value.trim()
+        // }
+        setNumArray([...numArray], {...numArray[idx].text = value})
+        let word = [...inputArray];
+        for(let i = 1; i<13; i++){
+            word[idx]= value.trim();
+          
+        }
+      
+        console.log([...word].join(' '));
+        setInputArray([...word]);
+    }
+
     return (
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -106,10 +116,11 @@ const MnemoinicInput = () => {
                     numArray.map((item, idx) => {
                         return(
                             <TextInput style={styles.word_wrapper}
-                                key={item.id}
-                                placeholder= {item.id.toString()}
+                                key={idx.toString()}
+                                placeholder= {(idx+1).toString()}
                                 placeholderTextColor = "#CECECE"
-                                onChangeText={(text) => onChangeMnemonic(idx, text)}
+                                onChangeText={(value) => onChangeMnemonic(idx, value)}
+                                value = {item.text}
                             />
                         )
                             })

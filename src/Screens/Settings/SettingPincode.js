@@ -2,13 +2,9 @@ import React, { useState, useCallback, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView, Alert} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
-//pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 from 'react-native-bip39';
-import rizonjs from '../../../rizonjs/dist/rizon'
-import { useSelector, useDispatch } from 'react-redux';
-import { removeAddress } from '../../store/actions'
 import { useIsFocused } from '@react-navigation/native';
+import Topbar from '../../Components/Topbar';
 const SettingPincode = () => {
     const isFocused = useIsFocused(); 
 
@@ -31,7 +27,6 @@ const SettingPincode = () => {
     const [number, setNumber]  = useState(numberId);
     const [falseCount, setFalseCount] = useState(0);
 
-
     useEffect(()=> {
         if(falseCount > 0){
             setPincode(['', '', '', '']);
@@ -49,14 +44,10 @@ const SettingPincode = () => {
     const makeSecureKey = async (code) => {
       
         const pincode = code.join('');
-        console.log('pincode', pincode);
-       
-        //testPincode => 복구 끝나면 pincode로 변경하기
         RNSecureKeyStore.get("pincode")
 	    .then((res) => {
 		    console.log(res);
             if(pincode === res){
-                // navigation.navigate('Settings');
                 navigation.navigate('Settings', {
                     checkRoute: true,
                   });
@@ -72,14 +63,13 @@ const SettingPincode = () => {
     }
 
     const onPressNum = (id) => {
-   
-      
         let code = [...pincode];
         for(let i = 0; i<code.length; i++){
             if(code[i] === ''){
                 code[i] = id;
                 setPincode(code);
                 if(i === 3){
+                    makeSecureKey(code)
                 }
                 break;
             }else{
@@ -105,10 +95,11 @@ const SettingPincode = () => {
         console.warn(code);
         setPincode(code);
     }
-
+    
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
+            <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
                     <Text style = {styles.txt_title}>Enter Your PIN Code</Text>

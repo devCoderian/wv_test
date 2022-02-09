@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView, BackHandler, Alert } from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import MAIN from '../../../src/assets/images/spaceship.png';
@@ -18,6 +18,7 @@ const Home = ({route}) => {
     const isFocused = useIsFocused(); 
 
     useEffect(() => {
+        if(isFocused){
         RNSecureKeyStore.remove("pincode")
         .then((res) => {
             console.log(res);
@@ -36,28 +37,54 @@ const Home = ({route}) => {
         }, (err) => {
             console.log(err);
         });
+        RNSecureKeyStore.remove("mnemonic")
+        .then((res) => {
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        });
+    }
     },[isFocused]);
 
     
-    useEffect(() => {
-        const backAction = () => {
-        if( route.name == 'Home'){
-          Alert.alert("Hold on!", "앱을 종료하시겠습니까?", [
-            {
-              text: "취소",
-              onPress: () => null,
-            },
-            { text: "확인", onPress: () =>  BackHandler.exitApp()}
-          ]);
-          return true;
-        };
-        }
+    useFocusEffect(
+        useCallback(() => {
         const backHandler = BackHandler.addEventListener(
           "hardwareBackPress",
-          backAction
-        );
-        return () => backHandler.remove();
-      }, []);
+          function(){
+            console.log(isFocused)
+            Alert.alert("Stop","앱을 종료하시겠습니까?",[
+              { text:"아니오",
+                onPress: ()=> null,
+                style:"cancel" },
+              { text:"네",
+                onPress: ()=> {BackHandler.exitApp()}}
+            ]);
+            return true;
+          }
+        )
+        return () => backHandler.remove()
+        },[])
+      )
+    // useEffect(() => {
+    //     const backAction = () => {
+    //     if( route.name == 'Home'){
+    //       Alert.alert("Hold on!", "앱을 종료하시겠습니까?", [
+    //         {
+    //           text: "취소",
+    //           onPress: () => null,
+    //         },
+    //         { text: "확인", onPress: () =>  BackHandler.exitApp()}
+    //       ]);
+    //       return true;
+    //     };
+    //     }
+    //     const backHandler = BackHandler.addEventListener(
+    //       "hardwareBackPress",
+    //       backAction
+    //     );
+    //     return () => backHandler.remove();
+    //   }, []);
     
 
     return(

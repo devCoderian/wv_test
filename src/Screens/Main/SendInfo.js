@@ -3,11 +3,8 @@ import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { useSelector, useDispatch } from 'react-redux';
-import rizonjs from '../../../rizonjs/dist/rizon'
-import { removeAddress } from '../../store/actions'
 const SendInfo = () => {
   
     //보낼때 성공하면 꼭 초기화 해주기!!!!!!!
@@ -49,17 +46,17 @@ const SendInfo = () => {
                 </View>
                 <View style = {[styles.info_wrapper, {height: 250}]}>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
-                        <Text style = {styles.txt_subtitle}>수량</Text>
-                        <Text style = {styles.txt_subtitle}>{(parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)/1000000} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>수량</Text>            
+                        <Text style = {styles.txt_subtitle}>{send_amount} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>수수료</Text>
-                        <Text style = {styles.txt_subtitle}>{send_fee/10} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{send_fee} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>Total</Text>
                         {/* <Text style = {styles.txt_subtitle}>{(parseInt(send_amount)+send_fee)/1000000} atolo</Text> */}
-                        <Text style = {styles.txt_subtitle}>{send_amount} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{(parseFloat(send_amount)*1000000+parseFloat(send_fee)*1000000)/1000000} atolo</Text>
                     </View>
                     <View style ={{width: 370, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.4)', alignSelf: 'center'}}></View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
@@ -69,7 +66,7 @@ const SendInfo = () => {
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
                         <Text style = {styles.txt_subtitle}>전송 후 가능 수량</Text>
                         {/* <Text style = {styles.txt_subtitle}>{(parseInt(balance)-(parseInt(send_amount)+ parseInt(send_fee)))/1000000} atolo</Text> */}
-                        <Text style = {styles.txt_subtitle}>{(balance-(parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000))/1000000} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{(balance-((parseFloat(send_amount)*1000000+parseFloat(send_fee)*100000)))/1000000} atolo</Text>
                     </View>
                 </View>
                 <View style = {{ marginTop: 10}} >

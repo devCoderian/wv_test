@@ -1,4 +1,4 @@
-import React ,{ useState, useCallback, useEffect } from 'react';
+import React ,{ useState, useCallback, useEffect, useRef } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, BackHandler, Image, ScrollView, Alert, Linking} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
@@ -8,40 +8,35 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
 import Topbar from '../../Components/Topbar';
 import moment from "moment-timezone"
-import { useIsFocused, useFocusEffect  } from '@react-navigation/native';
-import ProgressBar from '../../Components/ProgressBar'
+import { useIsFocused, useFocusEffect} from '@react-navigation/native';
+import ProgressBar from '../../Components/ProgressBar';
 
 const Main = () => {
     const isFocused = useIsFocused(); 
     const navigation = useNavigation();
-    const goRight = useCallback(() => navigation.navigate('SendAddress'),[]) 
+    const goRight = () =>{ 
+        isSend ? navigation.navigate('SendAddress') : Alert.alert('송금할 수 있는 토큰이 없습니다.')
+    };
+    const [progress, setProgress] = useState(false);
     const { t, i18n } = useTranslation();
     const chainId = "groot-14";
     const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
     rizon.setBech32MainPrefix("rizon");
     rizon.setPath("m/44'/118'/0'/0/0");
 
-    const [ecpairPriv, setEcpairPriv] = useState('');
     // const [mnemonic, setMnemonic] = useState("left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect");
     const [mnemonic, setMnemonic] = useState('');
     const [amount, setAmount] = useState(0);
     const [add, setAdd] = useState('');
-    //http://seed-2.testnet.rizon.world:1317/cosmos/bank/v1beta1/balances/rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp
     const [price, setPrice] = useState(0);
     const [txInfo, setTxInfo] = useState([]);
-
-
+    const [isSend, setIsSend] = useState(false);
 
     const getTxInfo = async(address) => {
         const txAPI = `https://api-rizon-testnet.cosmostation.io/v1/account/new_txs/${address}?limit=100`
         let txInfoArray = await fetch(txAPI).then(res => {
-            console.log('res###########',res)
             return res.json();
         })
-        
-        // console.log(txInfoArray[0].data.timestamp);
-        // console.log(txInfoArray);
-        console.log(txInfoArray)
         setTxInfo(txInfoArray);
     }
 
@@ -50,36 +45,32 @@ const Main = () => {
         let priceResponse = await fetch(atoloPriceAPI).then(res => {
             return res.json();
         });
-        console.log("priceResponse",priceResponse)
         setPrice(priceResponse.data.opening_price);
         setProgress(false);
     }
 
     const getCoinInfo = async(address) => {
-        console.log('set')
+        setProgress(true);
         const balanceAPI = `http://seed-2.testnet.rizon.world:1317/cosmos/bank/v1beta1/balances/${address}`
         let balanceResponse = await fetch(balanceAPI).then(res => {
             return res.json();
         });
-        console.log(balanceResponse);
-        console.log(balanceResponse.balances.length);
     
         //잔액이 없을 경우
         if(balanceResponse.balances.length === 0){
             RNSecureKeyStore.set('balance', '0', {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY} ).then((item) => {
                 setAmount(0);
-                console.log('성공');
+                setIsSend(false); //송금 불가
             });
         }else{
             setAmount(balanceResponse.balances[0].amount);
             RNSecureKeyStore.set('balance', balanceResponse.balances[0].amount, {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY} ).then((item) => {
-                console.log('성공');
+                setIsSend(true);
             });
         }
        
         getCoinPrice();
     }
-
 
     useFocusEffect(
         useCallback(() => {
@@ -97,17 +88,11 @@ const Main = () => {
             return true;
           }
         )
-        return () => backHandler.remove()
+        return () => backHandler.remove();
         },[])
       )
 
-      const [progress, setProgress] = useState(false);
-
     useEffect(() => {
-        //더미데이터
-        // getCoinInfo('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
-        // setAdd('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
-        // getTxInfo('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
         setProgress(true);
         RNSecureKeyStore.get("mnemonic")
 	    .then((mnemonic) => {
@@ -120,13 +105,10 @@ const Main = () => {
                getCoinInfo(address);
                getTxInfo(address);
         });
-        // (price*amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','
-        
     },[isFocused]);
-
-
-    // getCoinInfo(address);
-    // getTxInfo(address);
+    const copyAdd = (text) => {
+        console.log('value', text);
+    }
     return (
         <>
         {progress && <ProgressBar />}
@@ -135,19 +117,17 @@ const Main = () => {
               <Topbar logo={true}/>
                 <View style = {styles.content} >
                 <View style={styles.container} >
-                    {/* <Text style = {styles.txt_title}>my wallet</Text> */}
-                    {/* <Text style = {{color: '#fff'}}>주소</Text> */}
                 </View>
                 <View style = {styles.address_wrapper} >
-                    <Text style ={{ color: '#fff'}}>{add}</Text>
+                    {/* <TouchableOpacity onPress={(text) =>copyAdd(text)}> */}
+                        <Text style ={{ color: '#fff'}} selectable>{add}</Text>
+                    {/* </TouchableOpacity> */}
                 </View>
                 <View style = {styles.coin_info_wrapper}>
                     <Image style = {styles.coin_img} source={require('../../assets/images/logo.png')} />
                     <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
                         <View>
                         <Text style = {styles.txt_title}>{(amount/1000000).toString()}</Text>
-                        {/* <Text style = {styles.txt_subtitle}>{Number(price)*Number(amount.toString().replace(/\B(?=(\d{6})+(?!\d))/g, '.'))} KRW</Text> */}
-                       
                         <Text style = {styles.txt_subtitle}>{amount === 0 ?  0: (price*(amount/1000000)).toFixed(4).toString() } KRW</Text>
                         </View>
                         {/* 리로드 */}
@@ -163,31 +143,16 @@ const Main = () => {
                 </View>
                 <ScrollView style={styles.list_box_container}>
                     <Text style = {styles.title_text}>History</Text>    
-                               {/* {txInfoComponent()} */}
-                                    {/* <TouchableOpacity> */}
-                                        {txInfo.map((item, idx) => {
-                                            //   var date = new Date(item.header.timestamp);
-                                            //   const nowTime = moment(item.header.timestamp).format('YYYY-MM-DD HH:mm:ss');
-                                          //  const nowTime = moment(item.header.timestamp).format('YYYY-MM-DD HH:mm:ss');
+                            {txInfo.length !== 0 ? txInfo.map((item, idx) => {
                                             return(
-                                            <TouchableOpacity key ={idx} style={styles.list_box} onPress={() => Linking.openURL(`https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}`)   
-                                            // return(
-                                            //     <View style={{flex: 1}}>
-                                            // <WebView
-                                            //     // source={{ uri: `https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}` }}
-                                            //     source={{ uri: 'https://www.naver.com' }} 
-                                            //     style={{ marginTop: 20 }}
-                                            //   />
-                                            //   </View>
-                                            // )
-                                            }>
-                                                <Text style={{color: '#fff'}}>
-                                                {/* {date.getFullYear()+'.'+(date.getMonth()+1)+'.'+date.getDate()
-                                                + " "+date.getHours()+":"+date.getMinutes()} */}
+                                            <View key ={idx} style={styles.list_box}>
+                                                <TouchableOpacity style={{color: '#fff'}} onPress={() => Linking.openURL(`https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}`)}>
+                                                <Text>
                                                 {
                                                     moment(item.header.timestamp).tz('Asia/Seoul').format('YYYY.MM.DD HH:mm:ss')
                                                 }
                                                 </Text>
+                                                </TouchableOpacity>
                                               
                                                 {item.data.tx.body.messages[0].from_address === add ?
                                                 <Text style={{color: 'red'}}>To</Text>: 
@@ -202,14 +167,16 @@ const Main = () => {
                                                 <Text style={{color: '#fff'}}>
                                                 {item.data.tx.body.messages[0].amount[0].amount/1000000} atolo
                                                 </Text>
-                                                {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>실패</Text>: null}
-                                            
-
-                                                </TouchableOpacity>
-                                            )
-                                        })}
-                                        
-                                {/* </TouchableOpacity> */}
+                                                {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>실패</Text>: null
+                                              }                        
+                                            </View>
+                                            )                         
+                                        })
+                                        :<View style={styles.list_box} >
+                                            <Text style={{color: '#fff'}}>조회 결과가 없습니다.</Text>
+                                        </View>    
+                                          
+                                        }
                 </ScrollView>
             </View>
             </ImageBackground>
@@ -300,7 +267,7 @@ const styles = StyleSheet.create({
     list_box_container:{
         marginTop: 20,
         width: '100%',
-        height: 350
+        height: 350,
     },  
     list_box: {
         width: 350,
@@ -312,7 +279,7 @@ const styles = StyleSheet.create({
     title_text:{
         paddingTop: 5,
         color: '#fff',
-        fontSize: 18
+        fontSize: 18,
     }
 })
 

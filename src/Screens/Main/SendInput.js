@@ -29,12 +29,12 @@ const SendInput = () => {
             console.log('내 보유 수량', balance)
             setBalance(parseInt(item));
             console.log('보유수량 - 수수료', parseInt(item)-(send_fee*100000));
-            setMaxAmount(parseInt(item)-(send_fee*100000)); 
+            setMaxAmount(parseInt(item)-(send_fee*1000000)); 
         })
     },[]);
 
     useEffect(()=> {
-        setMaxAmount(parseInt(balance)-(send_fee*100000)); 
+        setMaxAmount(parseInt(balance)-(send_fee*1000000)); 
         //수수료 최소값 제한
         if(send_fee < 0.005){
             Alert.alert('수수료는 최소값(0.005)이상을 입금해야 합니다.');
@@ -58,23 +58,6 @@ const SendInput = () => {
             send_amount.toString().length > 5 &&  Alert.alert('6자리 이상으로 사용X')
         }
         
-        // if(send_amount.length > 5){
-            
-        //     let afterStr = send_amount.toString().split('.');
-        //     console.log(afterStr);
-        //     if(afterStr[0].length > 5){
-        //         Alert.alert('6자리 이상으로 사용X')
-        //         setAmount((prev) => prev)
-        //     }else if(afterStr[1].length > 6){
-        //         Alert.alert('6자리 이상으로 사용X')
-        //         setAmount((prev) => prev)
-        //     }else{
-        //         Alert.alert('6자리 이상으로 사용X')
-        //         setAmount((prev) => prev)
-        //     }
-        // }
-      
-    
       
             if((parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)> maxAmount){
                 Alert.alert('최대 수량이상을 입금할 수 없습니다.');
@@ -82,26 +65,6 @@ const SendInput = () => {
             }else{
                 setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
             }
-    
-
-
-        /*
-        if(send_amount !== 0){ 
-                //보내는 수량이 최대값이라면
-            if(send_amount === maxAmount){ 
-                // send_amount> balance ? Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(balance-(send_fee*100000));
-                // send_amount> balance ? Alert.alert('최대 수량이상을 입금할 수 없습니다.'):  setCharge(((balance-(send_fee*100000))).toString());
-                setCharge(balance-(send_fee*100000))
-            }else{ 
-                if(send_amount+(send_fee*100000)> balance){
-                    Alert.alert('최대 수량이상을 입금할 수 없습니다.');
-                    setAmount(0);
-                }else{
-                    setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
-                }
-            }
-        }
-        */
     },[send_amount, send_fee, charge]);
 
     const onChange = (num) => {
@@ -165,57 +128,24 @@ const SendInput = () => {
                 <View style = {styles.amount_wrapper}>
                     <View style={{ justifyContent: 'center' , alignItems:'center', flexDirection: 'row'}}>
                     <TextInput style={styles.word}
-                    // multiline={true}
-                    // placeholder={send_amount === 0?  '보낼 수량을 입력하세요.': ''}
                     placeholderTextColor = "#CECECE"
-                    // onChangeText={(text) => setCharge((text))}
                     keyboardType="numeric"
-                    // onEndEditing = {() => setIsFocusAmount(false)}
-                    // onFocus= {() =>setIsFocusAmount(true)}
-                    // value={send_amount !== 0 && (charge/1000000).toString()}
-                  
                     onChangeText={(num) => {
-                        //  let check = num.replace('.','');
                         let check =num.replace(/(^0+)/, ""); 
                         if(check[0] === '.'){
                             check = check.substring(1, check.length)
                         }
                          num === ''? setAmount(0):setAmount(check);
-                         //num === ''? setAmount(0):onChange(num);
-                    }}
-                    //value={(charge/1000000).toString()}.
-                    //value={(send_amount).toString().replace(/\B(?=(\d{6})+(?!\d))/g, ".")}
-                    value={ send_amount.toString()}
-                 
-                    // value={'1000000000000000000000000'.toString().replace(/\B(?=(\d{6})+(?!\d))/g, ".")}
-                    //value={send_amount !== 0&&send_amount.toString()}
+                    }}               
+                    value={send_amount.toString()}    
                     />
                     
                     </View>
                     
                 </View>
-                {/* <Text style = {[styles.word,{
-                    textAlign:'right', paddingRight: 15, paddingBottom:10
-                }]}>전송 수량(수량 - 수수료) : {send_amount === 0? '0': parseInt(send_amount)/1000000}</Text>
-                <Text style = {[styles.word,{
-                    textAlign:'right', paddingRight: 15, paddingBottom:10
-                }]}>최대 전송 가능 수량(보유량- 수수료): {maxAmount/1000000}</Text>
-                <View style = {styles.amount_btn_wrapper}>
-                    <TouchableOpacity style = {styles.amount_btn} 
-                    onPress={()=> setAmount((prev) => (parseInt(prev)+100000).toString())}><Text style={{color: '#fff'}}>+ 0.1</Text></TouchableOpacity>
-                    <TouchableOpacity style = {styles.amount_btn} 
-                    onPress={()=> setAmount((prev) => (parseInt(prev)+1000000).toString())}
-                    ><Text style={{color: '#fff'}}>+ 1</Text></TouchableOpacity>
-                    <TouchableOpacity style = {styles.amount_btn}
-                      onPress={()=> setAmount((prev) => (parseInt(prev)+10000000).toString())}><Text style={{color: '#fff'}}>+ 10</Text></TouchableOpacity>    
-                    <TouchableOpacity style = {styles.amount_btn}
-                     onPress={()=> setAmount(maxAmount/2)}><Text style={{color: '#fff'}}>절반</Text></TouchableOpacity>    
-                     <TouchableOpacity style = {styles.amount_btn}
-                    onPress={()=> setAmount(maxAmount)}><Text style={{color: '#fff'}}>최대</Text></TouchableOpacity>               
-                </View> */}
                   <Text style = {[styles.word,{
                     textAlign:'right', paddingRight: 15, paddingBottom:10
-                }]}>전송 수량(수량 - 수수료) : {send_amount === 0 ? '0': (parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)/1000000}</Text>
+                }]}>전송 수량(수량 + 수수료) : {send_amount === 0 ? '0': (parseFloat(send_amount)*1000000+parseFloat(send_fee)*1000000)/1000000}</Text>
                 <Text style = {[styles.word,{
                     textAlign:'right', paddingRight: 15, paddingBottom:10
                 }]}>최대 전송 가능 수량(보유량- 수수료): {maxAmount/1000000}</Text>

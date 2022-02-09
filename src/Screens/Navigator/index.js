@@ -21,25 +21,7 @@ import Pretend from '../../Screens/Pretend/index';
 /* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */
 const Navigator = () => {
   
-  //console.log(main === 'Main')
   const Stack = createNativeStackNavigator();
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //     RNSecureKeyStore.get("privkey")
-  //     .then((res) => {
-  //       dispatch(sendInfo(true));
-  //     }, (err) => {
-  //       dispatch(sendInfo(false));
-  //     });
-  // },[])
-//   useEffect(() => {
-//     RNSecureKeyStore.get("privkey")
-//     .then((res) => {
-//      setMain('Main')
-//     }, (err) => {
-//     setMain('Home')
-//     });
-// },[main])
   return (
         <NavigationContainer>
         {/* <Stack.Navigator initialRouteName= {main === 'Main'? 'Main' :'Home' }  screenOptions={{headerShown: false}}> */}

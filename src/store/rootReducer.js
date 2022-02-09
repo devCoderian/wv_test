@@ -22,8 +22,6 @@ export const rootReducer = (state= initialState, action) => {
         return {...state, send_address: action.send_address}
         case 'HAS_ADDRESS': 
         return {...state, hasAddress: action.hasAddress}
-        // case 'SEND_INFO': 
-        //     return {...state, sendInfo: action.sendInfo }
     }
     return state;
 }

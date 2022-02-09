@@ -53,7 +53,6 @@ const RestorePincodeConfirm = () => {
 	    }, (err) => {
 		    console.log(err);
 	    });
-     
     }
 
     const onPressNum = (id) => {

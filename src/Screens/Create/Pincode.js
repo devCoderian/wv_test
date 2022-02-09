@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
-//pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'

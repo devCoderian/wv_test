@@ -1,16 +1,14 @@
-import React, { useState, useCallback, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, ImageBackground, SafeAreaView} from 'react-native';
 import BG from '../../../src/assets/images/bg_2.png';
 import { useNavigation } from '@react-navigation/native';
 //pincode 저장 라이브러리
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
-import bip39 from 'react-native-bip39';
 import rizonjs from '../../../rizonjs/dist/rizon'
-import { useSelector, useDispatch } from 'react-redux';
-import { removeAddress } from '../../store/actions'
-import { useIsFocused } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import Topbar from '../../Components/Topbar';
+
 const SendPincode = () => {
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
@@ -30,14 +28,13 @@ const SendPincode = () => {
     const [resMsg, setResMsg] = useState('송금완료');
 
     useEffect(()=> {
-     
         RNSecureKeyStore.get('privkey').then((item) => {
             setPriveKey(Buffer.from(item.toString('hex'), "hex"));
             console.log('privkey', item)
         });
 
-        // console.log('send_amount', send_amount);
-        // console.log('send_fee',send_fee);
+        console.log('send_amount', send_amount);
+        console.log('send_fee',send_fee);
         RNSecureKeyStore.get('balance').then((balance) => {
             setBalance(balance);
             console.log('balance', balance)
@@ -47,8 +44,7 @@ const SendPincode = () => {
             console.log('address',address)
             setAdd(address);
         });
-   
-      
+
     },[]);
 
     const navigation = useNavigation();
@@ -79,12 +75,7 @@ const SendPincode = () => {
         const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
         rizon.setBech32MainPrefix("rizon");
         rizon.setPath("m/44'/118'/0'/0/0");
-        // const address = rizon.getAddress('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
-        // const ecpairPriv = rizon.getECPairPriv('left merge august enemy sadness human diagram proof wild eagle shoot better board humor word media motor firm zebra indicate flock thing trial protect');
-        // const address = add;
-        // const add = '';
-       
-
+    
         rizon.getAccounts(add).then(data => {
             console.log(data);
             let stdSignMsg = rizon.newStdMsg({
@@ -94,19 +85,17 @@ const SendPincode = () => {
                         value: {
                             amount: [
                                 {
-                                    amount: String(send_amount), 	// 6 decimal places (1000000 uatolo = 1 ATOLO)
+                                    amount: String(parseFloat(send_amount)*1000000), 	// 6 decimal places (1000000 uatolo = 1 ATOLO)
                                     denom: "uatolo"
                                 }
                             ],
                             from_address: add,
                             to_address: send_address
-                            // to_address: "rizon1rt8u24lxw4hqxecq0gcf7jf99e25kpw2x7yprm"
                         }
                     }
                 ],
                 chain_id: chainId,
-                //fee: { amount: [ { amount: String(3), denom: "uatolo" } ], gas: String(100000) },
-                fee: { amount: [ { amount: String(send_fee*1000000), denom: "uatolo" } ], gas: String(100000) },
+                fee: { amount: [ { amount: String(send_fee*100000), denom: "uatolo" } ], gas: String(100000) },
                 memo: send_memo,
                 account_number: String(data.account.account_number),
                 sequence: String(data.account.sequence)
@@ -114,35 +103,28 @@ const SendPincode = () => {
         
             const signedTx = rizon.sign(stdSignMsg, privkey);
            
-            rizon.broadcast(signedTx).then(() => {
+            rizon.broadcast(signedTx).then((res) => {
                 try {
+                    console.log('송금 결과',res);
                     setIsSuceess(true);
                     setVisible(true);
                 } catch (error) {
                     setResMsg(error);
                     setIsSuceess(true);
                     setVisible(true);
-                    console.log(error)
                 }
             });
         })
-
-        // useDispatch(removeAddress());
-
     };
-
 
     const makeSecureKey = async (code) => {
       
         const pincode = code.join('');
-        console.log('pincode', pincode);
-       
-        //testPincode => 복구 끝나면 pincode로 변경하기
         RNSecureKeyStore.get("pincode")
 	    .then((res) => {
 		    console.log(res);
             if(pincode === res){
-                console.log('일치, 니모닉 화면으로 넘어가기');
+                console.log('일치');
                 goRight();
             }else{
                 setFalseCount((prev) => prev+1);
@@ -158,36 +140,24 @@ const SendPincode = () => {
 
 
     const onPressNum = (id) => {
-   
-      
         let code = [...pincode];
         for(let i = 0; i<code.length; i++){
             if(code[i] === ''){
                 code[i] = id;
                 setPincode(code);
                 if(i === 3){
-                    // code[i] = id;
-                     // RNSecureKeyStore.set(pincode);
-                    // 4 되면  securestorage 저장 
-                    makeSecureKey(code);
-                    
+                    makeSecureKey(code);                
                 }
                 break;
             }else{
                 continue;
             }
         }
-
-        
-        console.warn(code);
     }
 
     const onDelete = () => {
-        
         let code = [...pincode];
-      
         for(let i = code.length-1; i >= 0; i--){
-            console.log('code[i]', i, code[i])
             if(code[i] !== ''){
                 code[i] = ''
                 console.log('code[i]', i, code[i])
@@ -196,10 +166,8 @@ const SendPincode = () => {
                 continue;
             }
         }
-        console.warn(code);
         setPincode(code);
     }
-
     return(
         <SafeAreaView style = {styles.container}>
             <ImageBackground style ={styles.image_bg} source ={BG}>
@@ -239,9 +207,6 @@ const SendPincode = () => {
                                 isSuccess ? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{resMsg}</Text>:
                                 <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
                             }
-                        {/* <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{resMsg}</Text>
-                        <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text> */}
-
                         <TouchableOpacity style = {{
                             borderRadius:5,
                             alignItems:'center',

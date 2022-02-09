@@ -2,13 +2,11 @@ import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, Alert, Image, ScrollView, ScrollViewBase} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { RadioButton, List  } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -16,9 +14,7 @@ const Setting = ({ route }) => {
     const navigation = useNavigation();
     const isFocused = useIsFocused(); 
     console.log(route.params);
-    const [expanded, setExpanded] = useState(false);
-    const [isExpended, setIsExpended] = useState(false);
-    const [hasMemonic, setHasMemonic] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const init = () => {
         console.log('초기화')
         RNSecureKeyStore.remove("privkey")
@@ -29,15 +25,30 @@ const Setting = ({ route }) => {
         });
        
     }
-    useEffect(()=>{
-        if(route.params !== undefined){
-            route.params.checkRoute === true && setIsExpended(true)
-        }
-    },[route,isFocused])
+    const [word, setWord] = useState([]);
+    useEffect(() => {
+        setChecked('en');
+    },[]);  
 
     useEffect(()=>{
-        expanded === true && navigation.navigate('SettingPincode');
-    },[expanded, isFocused]);
+        console.log('check')
+        if(route.params !== undefined){
+            route.params.checkRoute === true && setIsExpanded(!isExpanded)
+        }
+    },[route])
+
+    const [hasMnemonic, setHasMnemonic]= useState(false);
+    useEffect(()=>{
+        RNSecureKeyStore.get("mnemonic")
+        .then((res) => {
+            let wordList = res.split(" ");
+            setWord(wordList);
+            setHasMnemonic(true);
+        }, (err) => {
+            console.log(err);
+            setHasMnemonic(false);
+        });
+    },[isFocused]);
     
     const lang = useSelector((state) => state.language);
     const [checked, setChecked] = useState(lang);
@@ -46,32 +57,21 @@ const Setting = ({ route }) => {
         console.log(checked)
         checked === 'ko' ?  i18n.changeLanguage('ko') :i18n.changeLanguage('en');
     },[checked, isFocused]); 
-    const [word, setWord] = useState([]);
-    useEffect(() => {
-        RNSecureKeyStore.get("mnemonic")
-        .then((res) => {
-            console.log('res',res);
-            let wordList = res.split(" ");
-            setWord(wordList);
-        }, (err) => {
-            console.log(err);
-        });
-    },[isFocused]);
-
-    useEffect(() => {
-        setChecked('en')
-    },[]);  
 
     const handlePress = () => {
-        if(hasMemonic === true){
-            setExpanded(!expanded)
-            isExpended && setIsExpended(false);
+       
+       if(hasMnemonic){
+        if(isExpanded === false) {
+            navigation.navigate('SettingPincode');
         }else{
-            Alert.alert('먼저 지갑을 생성하거나 복구해주세요.')
-        }
+            setIsExpanded(false);
+        };
+       }else{
+        Alert.alert('먼저 지갑을 생성하거나 복구해주세요.')
+       }
     };
 
-    const check = () => {
+    const mnem = () => {
         return(
         <View style = {styles.word_list_wrapper}>
         {word.map((item, idx) => {
@@ -116,10 +116,10 @@ const Setting = ({ route }) => {
                                 <Text style = {{color: '#fff'}}>{t('lang_title')}</Text>
                                 <TouchableOpacity style = {styles.confirmBtn} onPress={()=> handlePress()}>
                                 <Text style = {{color: '#fff'}}>비밀번호 복구 단어 찾기</Text>
-                                    <Icon name = {isExpended ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
+                                    <Icon name = {isExpanded ? 'arrow-up': 'arrow-down'} size={26} color ='#fff'/>
                                 </TouchableOpacity>
                             
-                                {isExpended ? check() : null}
+                                {isExpanded ? mnem() : null}
                             </View>
                             <View style={{ marginVertical:5}}>
                                 <Text style = {{color: '#fff'}}>초기화</Text>

@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 const Setting = ({ route }) => {
-  
     const navigation = useNavigation();
     const isFocused = useIsFocused(); 
     console.log(route.params);
@@ -24,19 +23,9 @@ const Setting = ({ route }) => {
         console.log('초기화')
         RNSecureKeyStore.remove("privkey")
         .then((res) => {
-            RNSecureKeyStore.remove("mnemonic")
-            .then((res) => {
-                RNSecureKeyStore.remove("address")
-                .then((res) => {
-                    navigation.navigate('Home');
-                }, (err) => {
-                    console.log(err);
-                });
-            }, (err) => {
-                console.log(err);
-            });
+            navigation.navigate('Home');
         }, (err) => {
-            console.log(err);
+            console.log(res);
         });
        
     }

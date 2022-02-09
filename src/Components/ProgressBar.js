@@ -1,13 +1,13 @@
 import * as Progress from 'react-native-progress';
 import React, { useState, useCallback, useEffect} from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Button, Image, ImageBackground, SafeAreaView} from 'react-native';
-const ProgressBar = (stop) => {
+const ProgressBar = () => {
     return(
         <>
         <View style ={[styles.absoluteView1]}>
         </View>
         <View style ={[styles.absoluteView2]}>
-            <Progress.CircleSnail  size={180} animated={stop} />
+            <Progress.CircleSnail  size={180} />
         </View>
         </>
     )

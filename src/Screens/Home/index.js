@@ -17,26 +17,26 @@ const Home = ({route}) => {
     const { t, i18n } = useTranslation();
     const isFocused = useIsFocused(); 
 
-    // useEffect(() => {
-    //     RNSecureKeyStore.remove("pincode")
-    //     .then((res) => {
-    //         console.log(res);
-    //     }, (err) => {
-    //         console.log(err);
-    //     });
-    //     RNSecureKeyStore.remove("privkey")
-    //     .then((res) => {
-    //         console.log(res);
-    //     }, (err) => {
-    //         console.log(err);
-    //     });
-    //     RNSecureKeyStore.remove("address")
-    //     .then((res) => {
-    //         console.log(res);
-    //     }, (err) => {
-    //         console.log(err);
-    //     });
-    // },[isFocused]);
+    useEffect(() => {
+        RNSecureKeyStore.remove("pincode")
+        .then((res) => {
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        });
+        RNSecureKeyStore.remove("privkey")
+        .then((res) => {
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        });
+        RNSecureKeyStore.remove("address")
+        .then((res) => {
+            console.log(res);
+        }, (err) => {
+            console.log(err);
+        });
+    },[isFocused]);
 
     
     useEffect(() => {

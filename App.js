@@ -8,19 +8,20 @@ import { useDispatch } from 'react-redux'
   const store = makeStore();
   
   const [main, setMain] = useState('');
-  useEffect(() => {
-      RNSecureKeyStore.get("privkey")
-      .then((res) => {
-        console.log(res);
-       setMain('Main')
-      }, (err) => {
-        console.log(err);
-      setMain('Home')
-      });
-  },[])
+
+  // useEffect(() => {
+  //     RNSecureKeyStore.get("privkey")
+  //     .then((res) => {
+  //       console.log(res);
+  //      setMain('Main')
+  //     }, (err) => {
+  //       console.log(err);
+  //     setMain('Home')
+  //     });
+  // },[])
    return (
     <ReduxProvider store ={store}>
-      <Navigator main= {main} />
+      <Navigator />
     </ReduxProvider>
    );
  }

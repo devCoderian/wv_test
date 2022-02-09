@@ -17,10 +17,11 @@ import Settings from '../../Screens/Settings'
 import SettingPincode from '../../Screens/Settings/SettingPincode'
 import SendPincode from '../Main/SendPincode';
 import RestorePincodeConfirm from '../Restore/RestorePincodeConfirm';
+import Pretend from '../../Screens/Pretend/index';
 /* <Stack.Screen name = "Pincode" component = {Pincode}   screenOptions={{header: () => <Topbar logo ={true}/>}}/> */
-const Navigator = ({main}) => {
+const Navigator = () => {
   
-  console.log(main === 'Main')
+  //console.log(main === 'Main')
   const Stack = createNativeStackNavigator();
   // const dispatch = useDispatch();
   // useEffect(() => {
@@ -41,7 +42,8 @@ const Navigator = ({main}) => {
 // },[main])
   return (
         <NavigationContainer>
-        <Stack.Navigator initialRouteName= {main === 'Main'? 'Main' :'Home' }  screenOptions={{headerShown: false}}>
+        {/* <Stack.Navigator initialRouteName= {main === 'Main'? 'Main' :'Home' }  screenOptions={{headerShown: false}}> */}
+        <Stack.Navigator initialRouteName= {'Pretend'}  screenOptions={{headerShown: false}}>
         <Stack.Screen name = "Home" component = {Home} />
         <Stack.Screen name = "Pincode" component = {Pincode}/>
         <Stack.Screen name = "PincodeConfirm" component = {PincodeConfirm}/>
@@ -58,6 +60,7 @@ const Navigator = ({main}) => {
         <Stack.Screen name = "SendPincode" component = {SendPincode}/>
         <Stack.Screen name = "Settings" component = {Settings}/>
         <Stack.Screen name = "SettingPincode" component = {SettingPincode}/>
+        <Stack.Screen name = "Pretend" component = {Pretend}/>
         </Stack.Navigator>
         </NavigationContainer>
     )

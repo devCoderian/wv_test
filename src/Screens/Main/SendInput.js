@@ -7,9 +7,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { useDispatch } from 'react-redux';
 import { sendInfo } from '../../store/actions'
+import { useTranslation } from 'react-i18next';
 
 const SendInput = () => {
 
+    const {t} = useTranslation();
     const [send_amount, setAmount] = useState(0); // 내가 보낼 수량
     const [charge, setCharge] = useState(''); //내가 보낼 수량 - 수수료
     const [balance, setBalance] = useState(0); // 보유 수량
@@ -24,9 +26,8 @@ const SendInput = () => {
 
     useEffect(() => {
         RNSecureKeyStore.get('balance').then((item) => {
-            console.log('내 보유 수량', balance)
             setBalance(parseInt(item));
-            console.log('보유수량 - 수수료', parseInt(item)-(send_fee*100000));
+            console.log('item',item )
             setMaxAmount(parseInt(item)-(send_fee*1000000)); 
         })
     },[]);
@@ -35,9 +36,8 @@ const SendInput = () => {
         setMaxAmount(parseInt(balance)-(send_fee*1000000)); 
         //수수료 최소값 제한
         if(send_fee < 0.005){
-            Alert.alert('수수료는 최소값(0.005)이상을 입금해야 합니다.');
+            Alert.alert(t('send_fee_min_warning'));
             setFee(0.005);
-
         }
 
         
@@ -56,13 +56,15 @@ const SendInput = () => {
             send_amount.toString().length > 5 &&   setAmount((prev) => prev)//Alert.alert('6자리 이상으로 사용X')
         }
         
-      
+        if(send_amount !== 0){
             if((parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000)> maxAmount){
-                Alert.alert(t('send_amount_warning'));
+                console.log('check', parseFloat(send_amount)*1000000-parseFloat(send_fee)*100000,maxAmount )
+                Alert.alert(t('send_amount_max_warning'));
                 setAmount(0);
             }else{
                 setCharge(send_amount - (send_fee*100000));//컴포넌트에 setAmount(초기화) //Alert.alert('최대 수량이상을 입금할 수 없습니다.');
             }
+        }
     },[send_amount, send_fee, charge]);
 
     const onChange = (num) => {
@@ -70,7 +72,6 @@ const SendInput = () => {
             case '0.1':
                 //atolo -> 6자리 제한 가능
               setAmount((prev) => (parseFloat(prev)*1000000 + 0.1*1000000)/1000000);
-            //   parseInt(send_amount)/1000000
               break;
             case '1':
                 setAmount((prev) => (parseInt(prev)+1));
@@ -92,9 +93,9 @@ const SendInput = () => {
     // 송금 확인 페이지 이동(유효성)
     const onNext = () => { 
         if(send_amount === 0){
-            Alert.alert('보낼 수량을 입력해주세요.');
+            Alert.alert(t('send_amount_warning'));
         }else if(send_fee === 0){
-            Alert.alert('보낼 수수료를 입력해주세요.');
+            Alert.alert(t('send_fee_warning'));
         }else{
             dispatch(sendInfo({send_amount, send_fee, send_memo}));
             goRight();
@@ -119,7 +120,7 @@ const SendInput = () => {
                     <View style = {styles.progress_bar}></View>                
                 </View>
                 <View>
-                <Text style = {styles.txt_subtitle}>전송할 토큰의 수량</Text>
+                <Text style = {styles.txt_subtitle}>{t('send_amount')}</Text>
                     {/* <Text style = {styles.txt_subtitle}>최대 전송 가능 수량: {balance}</Text> */}
                 </View>
                 <View style = {styles.amount_wrapper}>
@@ -142,10 +143,10 @@ const SendInput = () => {
                 </View>
                   <Text style = {[styles.word,{
                     textAlign:'right', paddingRight: 15, paddingBottom:10
-                }]}>전송 수량(수량 + 수수료) : {send_amount === 0 ? '0': (parseFloat(send_amount)*1000000+parseFloat(send_fee)*1000000)/1000000}</Text>
+                }]}>{t('send_amount+fee')} {send_amount === 0 ? '0': (parseFloat(send_amount)*1000000+parseFloat(send_fee)*1000000)/1000000}</Text>
                 <Text style = {[styles.word,{
                     textAlign:'right', paddingRight: 15, paddingBottom:10
-                }]}>최대 전송 가능 수량(보유량- 수수료): {maxAmount/1000000}</Text>
+                }]}>{t('send_max_amount')} {maxAmount/1000000}</Text>
                 <View style = {styles.amount_btn_wrapper}>
                     <TouchableOpacity style = {styles.amount_btn} 
                     onPress={()=> onChange('0.1')}><Text style={{color: '#fff'}}>+ 0.1</Text></TouchableOpacity>
@@ -155,14 +156,13 @@ const SendInput = () => {
                     <TouchableOpacity style = {styles.amount_btn}
                       onPress={()=> onChange('10')}><Text style={{color: '#fff'}}>+ 10</Text></TouchableOpacity>    
                     <TouchableOpacity style = {styles.amount_btn}
-                     onPress={()=>  onChange('half')}><Text style={{color: '#fff'}}>절반</Text></TouchableOpacity>    
+                     onPress={()=>  onChange('half')}><Text style={{color: '#fff'}}>{t('send_half')}</Text></TouchableOpacity>    
                      <TouchableOpacity style = {styles.amount_btn}
-                    onPress={()=>  onChange('max')}><Text style={{color: '#fff'}}>최대</Text></TouchableOpacity>               
+                    onPress={()=>  onChange('max')}><Text style={{color: '#fff'}}>{t('send_max')}</Text></TouchableOpacity>               
                 </View>
                 <View>
-                    <Text style = {styles.txt_subtitle}>수수료</Text>
+                    <Text style = {styles.txt_subtitle}>{t('send_fee')}</Text>
                 </View>
-                
                     <View  style={[styles.amount_wrapper,{
                          flexDirection : 'row'
                     }]}> 
@@ -177,12 +177,12 @@ const SendInput = () => {
                      <Text style = {styles.word}>atolo</Text>
                     </View>
                 <View style = {styles.amount_btn_wrapper}>
-                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.005)}><Text style={{color: '#fff'}}>최소</Text></TouchableOpacity>
-                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.01)}><Text style={{color: '#fff'}}>낮음</Text></TouchableOpacity>
-                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.05)}><Text style={{color: '#fff'}}>평균</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.005)}><Text style={{color: '#fff'}}>{t('send_min')}</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.01)}><Text style={{color: '#fff'}}>{t('send_low')}</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.fee_btn} onPress={()=> setFee(0.05)}><Text style={{color: '#fff'}}>{t('send_av')}</Text></TouchableOpacity>
                 </View>
                 <View>
-                    <Text style = {styles.txt_subtitle}>메모</Text>
+                    <Text style = {styles.txt_subtitle}>{t('send_memo')}</Text>
                 </View>
                 <View style = {[styles.amount_wrapper, {
                 height:80
@@ -197,7 +197,7 @@ const SendInput = () => {
                 
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={onNext}>
-                    <Text style = {styles.confirm_txt}>Next</Text>
+                    <Text style = {styles.confirm_txt}>{t('send_next')}</Text>
                     <Icon name = 'arrow-right' size={26} color='#fff'/>
                     </TouchableOpacity>
                 </View>
@@ -219,15 +219,9 @@ const styles = StyleSheet.create({
     },
     image_bg:{
       flex: 1,
-    //   alignItems: 'center',
     },
     content: {
-        // backgroundColor: '#5566ee',
         flex: 1,
-        //marginTop: -10,
-        //justifyContent: 'space-around',
-        //justifyContent: 'center',
-        //paddingTop: 20,
         
     },
     progress_wrapper: {

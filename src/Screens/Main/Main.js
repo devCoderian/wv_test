@@ -1,6 +1,6 @@
 import React ,{ useState, useCallback, useEffect, useRef } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
-import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, BackHandler, Image, ScrollView, Alert, Linking} from 'react-native'
+import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, BackHandler, Image, ScrollView, Alert, Linking, Button} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
@@ -17,7 +17,7 @@ const Main = () => {
     const navigation = useNavigation();
     const { t, i18n } = useTranslation();
     const goRight = () =>{ 
-        isSend ? navigation.navigate('SendAddress') : Alert.alert(t('main_result'))
+        isSend ? navigation.navigate('SendAddress') : Alert.alert(t('main_warning'))
     };
     const [progress, setProgress] = useState(false);
     const chainId = "groot-14";
@@ -32,11 +32,13 @@ const Main = () => {
     const [price, setPrice] = useState(0);
     const [txInfo, setTxInfo] = useState([]);
     const [isSend, setIsSend] = useState(false);
-
+    const [isReload, setIsReload] = useState(false);
     const getTxInfo = async(address) => {
+        // setProgress(true);
         const txAPI = `https://api-rizon-testnet.cosmostation.io/v1/account/new_txs/${address}?limit=100`
         let txInfoArray = await fetch(txAPI).then(res => {
             return res.json();
+
         })
         setTxInfo(txInfoArray);
     }
@@ -79,11 +81,12 @@ const Main = () => {
           "hardwareBackPress",
           function(){
             console.log(isFocused)
-            Alert.alert("Stop","앱을 종료하시겠습니까?",[
-              { text:"아니오",
+            const exit = t('Exit');
+            Alert.alert("Stop",exit,[
+              { text:"cancle",
                 onPress: ()=> null,
                 style:"cancel" },
-              { text:"네",
+              { text:"Yes",
                 onPress: ()=> {
                     AsyncStorage.setItem('lang', i18n.language ).then((res) => {
                         console.log(res)
@@ -105,17 +108,18 @@ const Main = () => {
 	    .then((mnemonic) => {
             setMnemonic(mnemonic);
         });
-        RNSecureKeyStore.get("address")
-        .then((address) => {
-            console.log(address)
-               setAdd(address);
-               getCoinInfo(address);
-               getTxInfo(address);
-        });
-    },[isFocused]);
-    const copyAdd = (text) => {
-        console.log('value', text);
-    }
+        if(isFocused){
+            RNSecureKeyStore.get("address")
+            .then((address) => {
+                console.log(address)
+                   setAdd(address);
+                   getCoinInfo(address);
+                   getTxInfo(address);
+                   setIsReload(false);
+            });
+        }
+    },[isFocused, isReload]);
+
     return (
         <>
         {progress && <ProgressBar />}
@@ -126,19 +130,19 @@ const Main = () => {
                 <View style={styles.container} >
                 </View>
                 <View style = {styles.address_wrapper} >
-                    {/* <TouchableOpacity onPress={(text) =>copyAdd(text)}> */}
+                    <TouchableOpacity>
                         <Text style ={{ color: '#fff'}} selectable>{add}</Text>
-                    {/* </TouchableOpacity> */}
+                    </TouchableOpacity>
                 </View>
                 <View style = {styles.coin_info_wrapper}>
                     <Image style = {styles.coin_img} source={require('../../assets/images/logo.png')} />
                     <View style={{ justifyContent: 'center' , flexDirection: 'row'}}>
                         <View>
-                        <Text style = {styles.txt_title}>{(amount/1000000).toString()}</Text>
+                        <Text style = {styles.txt_title}>{(amount/1000000).toString()} ATOLO</Text>
                         <Text style = {styles.txt_subtitle}>{amount === 0 ?  0: (price*(amount/1000000)).toFixed(4).toString() } KRW</Text>
                         </View>
                         {/* 리로드 */}
-                        <TouchableOpacity style = {styles.reload} onPress={() => getCoinInfo(add)}>
+                        <TouchableOpacity style = {styles.reload} onPress={() => setIsReload(true)}>
                         <Icon name = 'refresh' size={30} color={'#fff'} />
                         </TouchableOpacity>
                     </View>
@@ -149,34 +153,41 @@ const Main = () => {
                     </TouchableOpacity>
                 </View>
                 <ScrollView style={styles.list_box_container}>
-                    <Text style = {styles.title_text}>History</Text>    
+                    <View style = {{flexDirection: 'row'}}>
+                    <Text style = {[styles.title_text, {alignSelf: 'flex-end'}]}>History</Text>  
+                        {/* <TouchableOpacity style = {{alignSelf: 'flex-end'}}onPress={() => getTxInfo(add)}>
+                            <Icon name = 'refresh' size={20} color={'#fff'} />
+                        </TouchableOpacity>   */}
+                    </View>
                             {txInfo.length !== 0 ? txInfo.map((item, idx) => {
                                             return(
-                                            <View key ={idx} style={styles.list_box}>
-                                                <TouchableOpacity style={{color: '#fff'}} onPress={() => Linking.openURL(`https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}`)}>
-                                                <Text>
-                                                {
-                                                    moment(item.header.timestamp).tz('Asia/Seoul').format('YYYY.MM.DD HH:mm:ss')
-                                                }
-                                                </Text>
-                                                </TouchableOpacity>
-                                              
-                                                {item.data.tx.body.messages[0].from_address === add ?
+                                            <TouchableOpacity key ={idx} style={styles.list_box} onPress={() => Linking.openURL(`https://testnet.mintscan.io/rizon-testnet/txs/${item.data.txhash}`)} >
+                                                 <View style = {{flexDirection: 'row', justifyContent: 'space-between'}}>
+                                                 {item.data.tx.body.messages[0].from_address === add ?
+                                                // <Button style={{color: 'red'}} title="To" />: 
+                                                // <Button style={{color: 'blue'}} title="From" />
                                                 <Text style={{color: 'red'}}>To</Text>: 
                                                 <Text style={{color: 'blue'}}>From</Text>
                                                 }
-                                                <Text style={{color: '#fff'}}>
+                                               
+                                                <Text style={{color: '#fff',  paddingTop: 5}}>
+                                               
+                                                {
+                                                    moment(item.header.timestamp).tz('Asia/Seoul').format('YYYY.MM.DD HH:mm:ss')
+                                                }            
+                                                </Text>
+                                                </View>
+                                                <Text style={{color: '#fff', fontSize:13, paddingTop: 10}}>
                                                 {item.data.tx.body.messages[0].from_address === add ?
                                                   `${item.data.tx.body.messages[0].to_address}`
                                                 : `${item.data.tx.body.messages[0].from_address}`
                                                 }
                                                 </Text>
-                                                <Text style={{color: '#fff'}}>
-                                                {item.data.tx.body.messages[0].amount[0].amount/1000000} atolo
+                                                <Text style={{color: '#fff', fontSize:13, paddingTop: 10}}>amount : {item.data.tx.body.messages[0].amount[0].amount/1000000} atolo
                                                 </Text>
                                                 {item.data.logs.length === 0 ? <Text style={{color: 'red'}}>{t('main_fail')}</Text>: null
                                               }                        
-                                            </View>
+                                            </TouchableOpacity>
                                             )                         
                                         })
                                         :<View style={styles.list_box} >
@@ -277,11 +288,13 @@ const styles = StyleSheet.create({
         height: 350,
     },  
     list_box: {
-        width: 350,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        width: 360,
+        // backgroundColor: 'rgba(255, 255, 255, 0.2)',
         borderRadius: 5,
-        marginTop: 15,
+        marginTop: 20,
         padding: 20,
+        borderWidth: 1,
+        borderColor: '#FFF',
     },
     title_text:{
         paddingTop: 5,

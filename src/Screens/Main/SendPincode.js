@@ -8,8 +8,10 @@ import rizonjs from '../../../rizonjs/dist/rizon'
 import { useSelector } from 'react-redux';
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import Topbar from '../../Components/Topbar';
+import { useTranslation } from 'react-i18next';
 
 const SendPincode = () => {
+    const {t} = useTranslation();
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
 
@@ -25,7 +27,7 @@ const SendPincode = () => {
     const [add, setAdd] =useState('');
     const [ balance, setBalance] = useState('')
     const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
-    const [resMsg, setResMsg] = useState('송금완료');
+    const [resMsg, setResMsg] = useState(t('send_success'));
 
     useEffect(()=> {
         RNSecureKeyStore.get('privkey').then((item) => {
@@ -95,7 +97,7 @@ const SendPincode = () => {
                     }
                 ],
                 chain_id: chainId,
-                fee: { amount: [ { amount: String(send_fee*100000), denom: "uatolo" } ], gas: String(100000) },
+                fee: { amount: [ { amount: String(send_fee*1000000), denom: "uatolo" } ], gas: String(100000) },
                 memo: send_memo,
                 account_number: String(data.account.account_number),
                 sequence: String(data.account.sequence)
@@ -174,8 +176,8 @@ const SendPincode = () => {
             <Topbar colorStyle ={{ backgroundColor: '#F1F1F1'}} color = {'#000'} />
             <View style = {styles.input_box}>
                 <View style = {styles.txt_container}>
-                    <Text style = {styles.txt_title}>Enter Your PIN Code</Text>
-                    <Text style = {styles.txt_subtitle}>PIN 번호 4자리를 입력해주세요.</Text>
+                    <Text style = {styles.txt_title}>{t('pincode_title')}</Text>
+                    <Text style = {styles.txt_subtitle}>{t('pincode_subtitle')}</Text>
                 </View>
                 <View style = {styles.code_wrapper}>
                     {
@@ -204,8 +206,8 @@ const SendPincode = () => {
                     <Dialog visible={visible} onDismiss={hideDialog}>
                         <View style = {{ marginTop : 50, alignItems: 'center'}}>
                             {
-                                isSuccess ? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{resMsg}</Text>:
-                                <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>비밀번호가 일치하지 않습니다.{falseCount}/3</Text>
+                                isSuccess ? <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('send_succeess')}</Text>:
+                                <Text style = {{ fontSize: 14, fontWeight:'normal', color: '#000' }}>{t('pincode_warning')} {falseCount}/3</Text>
                             }
                         <TouchableOpacity style = {{
                             borderRadius:5,
@@ -218,7 +220,7 @@ const SendPincode = () => {
                             <Text style = {{
                                 color: '#fff',
                                 fontFamily: 'Roboto'
-                                }} >확인</Text>
+                                }} >{t('mnemonic_confirm_btn')}</Text>
                             </TouchableOpacity>
                             </View>
                     </Dialog>
@@ -245,8 +247,9 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     txt_container:{
-        marginTop: 50,
-        alignItems:'center'
+        width: 350,
+        marginTop: 30,
+        alignItems:'center',
     },
     txt_title: {
         width: 250,
@@ -257,7 +260,7 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     txt_subtitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '400',
         lineHeight: 21, 
         color: '#000'

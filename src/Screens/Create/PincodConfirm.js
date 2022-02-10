@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import bip39 , {wordlists} from 'react-native-bip39';
 import Topbar from '../../Components/Topbar'
-import rizonjs from '../../../rizonjs/dist/rizon'
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 import ProgressBar from '../../Components/ProgressBar'
@@ -22,11 +21,6 @@ const PincodeConfirm = () => {
         falseCount === 3 &&  navigation.navigate('Home');
     };
     const [progress, setProgress] = useState(false);
-    /*rizonjs*/
-    const chainId = "groot-14";
-    const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
-    rizon.setBech32MainPrefix("rizon");
-    rizon.setPath("m/44'/118'/0'/0/0");
 
     const navigation = useNavigation();
     const goRight = useCallback(() => navigation.navigate('MnemonicInfo'),[]);
@@ -47,19 +41,6 @@ const PincodeConfirm = () => {
     const [pincode, setPincode] = useState(['', '', '', '']);
     const [number, setNumber]  = useState(numberId);
 
-  
-    const makeAddress = async(mnemonic) => {
-        RNSecureKeyStore.set("address", rizon.getAddress(mnemonic), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-        .then(()=> {
-            RNSecureKeyStore.set("privkey", rizon.getECPairPriv(mnemonic).toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
-            .then(()=> {
-                goRight(); 
-            });
-        });
-        // hex code 원복 방법
-        // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
-    }
-
     const makeSecureKey = async (code) => {
         setProgress(true);
         const pincode = code.join('');
@@ -69,13 +50,15 @@ const PincodeConfirm = () => {
                 bip39.generateMnemonic().then((res) => {
                     RNSecureKeyStore.set("mnemonic", res , {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
                     .then(() => {
-                        makeAddress(res);
+                        goRight(); 
+                        // makeAddress(res);
                     }, (err) => {
                         setProgress(false);
                         Alert.alert(err);
                     });
                   });
             }else{
+                setProgress(false);
                 console.log('불일치')
                 setFalseCount((prev) => prev+1);
                 setVisible(true);

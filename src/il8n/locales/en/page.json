@@ -30,7 +30,7 @@
 
     "mnemonic_confirm_title":"Check the recovery word",
     "mnemonic_confirm_subtitle_1": "Please match the order of the recovery words.",
-    "mnemonic_confirm_subtitle_2": "* If incorrect, go back and check again.",
+    "mnemonic_confirm_subtitle_2": "* Return to home in case of 3 or more errors.",
 
     "mnemonic_succeess": "Your wallet has been created.",
     "mnemonic_false": "The order is wrong.",
@@ -44,5 +44,33 @@
     "send_title":"consignee address",
     "send_subtitle":"Please enter the recipient's address.",
     "send_warning": "Please enter your address.",
-    "send_btn": "SEND"
+    "send_btn": "SEND",
+
+    "send_fee_min_warning": "The fee must be deposited above the minimum value (0.005).",
+    "send_amount_max_warning": "You cannot deposit more than the maximum amount.",
+    "send_fee_warning": "Please enter the fee to be sent.",
+    "send_amount_warning": "Please enter the quantity to be sent.",
+    "send_amount":"Quantity of tokens to be transferred",
+    "send_amount+fee": "Transfer Quantity (Quantity + Fee):",
+    "send_max_amount": "Maximum Transferable Quantity (Holding - Fee):",
+    "send_half": "half",
+    "send_max":"maximum",
+    "send_fee":"fees",
+    "send_min": "least",
+    "send_low": "lowness",
+    "send_av": "average",
+    "send_memo": "memo",
+    "send_next": "Next",
+
+    "send_info": "Please check the information you entered.",
+    "send_info_amount": "Quantity",
+    "send_info_Total": "Total",
+    "send_current": "Currently Available Quantity",
+    "send_trans_av": "Available quantity after sending",
+    "send_confirm_btn":"Send",
+
+    "send_success":"completed",
+    
+    "Exit": "Do you want a Exit"
+
 }

@@ -2,12 +2,17 @@ import React, {useState, useEffect, useCallback} from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground, StyleSheet  } from 'react-native'
 import { Dialog, Portal, Provider as PaperProvider } from 'react-native-paper';
-import RNSecureKeyStore from "react-native-secure-key-store";
 import { useNavigation } from '@react-navigation/native';
 import Topbar from '../../Components/Topbar'
 import PreventBack from '../../Components/PreventBack'
+import ProgressBar from '../../Components/ProgressBar';
+import rizonjs from '../../../rizonjs/dist/rizon';
+import { useTranslation } from 'react-i18next';
+import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
+
 const MnemonicConfirm = () => {
 
+    const {t} = useTranslation();
     const [visible, setVisible] = useState(false);
     const [falseCount, setFalseCount] = useState(0);
     const [isSuceess, setIsSuceess] = useState(false);
@@ -21,12 +26,18 @@ const MnemonicConfirm = () => {
     const [randomWords, setRandomWords] = useState([]);
     const [num, setNum] = useState(0);
     const navigation = useNavigation();
+    const [mnemonic, setMnemonic] = useState('');
 
-    const goLeft = useCallback(() => navigation.navigate('MnemonicRead'),[]);
-
+    /*rizonjs*/
+    const chainId = "groot-14";
+    const rizon = rizonjs.network("http://seed-2.testnet.rizon.world:1317", chainId);
+    rizon.setBech32MainPrefix("rizon");
+    rizon.setPath("m/44'/118'/0'/0/0");
+       
     useEffect(() => {
         RNSecureKeyStore.get("mnemonic")
 	    .then((res) => {
+            setMnemonic(res);
             let wordList = res.split(" ");
             setWords(wordList);
             setRandomWords([...wordList].sort(()=> Math.random() -0.5));
@@ -34,12 +45,27 @@ const MnemonicConfirm = () => {
 		    console.log(err);
 	    });
     },[]);
-   
+    const [progress, setProgress] = useState(false);
+    const makeAddress = async() => {
+        RNSecureKeyStore.set("address", rizon.getAddress(mnemonic), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+        .then(()=> {
+            RNSecureKeyStore.set("privkey", rizon.getECPairPriv(mnemonic).toString('hex'), {accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY})
+            .then(()=> {
+                // goRight(); 
+                setProgress(false);
+                setIsSuceess(true);
+                setVisible(true);
+            });
+        });
+        // hex code 원복 방법
+        // console.log(Buffer.from(ecpairPriv.toString('hex'), "hex"));
+    }
+
     useEffect(() => {
         //통과 여부 체크하기
         if(num === 12){
-            setIsSuceess(true);
-            setVisible(true);
+            setProgress(true);
+            makeAddress();
         }
     }, [num]);
     
@@ -61,6 +87,8 @@ const MnemonicConfirm = () => {
     }
 
     return (
+        <>
+        {progress && <ProgressBar />}
         <View style = {styles.container}>
               <ImageBackground style ={styles.image_bg} source ={BG}>
               <Topbar back='Pincode'/>
@@ -109,7 +137,7 @@ const MnemonicConfirm = () => {
                             <Text style = {{
                                 color: '#fff',
                                 fontFamily: 'Roboto'
-                                }}>확인</Text>
+                                }}>{t('mnemonic_confirm_btn')}</Text>
                             </TouchableOpacity>
                             </View>
                     </Dialog>
@@ -119,6 +147,7 @@ const MnemonicConfirm = () => {
             </View>
             </ImageBackground>
     </View>
+    </>
     )
 }
 
@@ -191,7 +220,7 @@ const styles = StyleSheet.create({
         marginVertical: 2,
     },
     word: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: '500',
         color: '#fff'
     }, 

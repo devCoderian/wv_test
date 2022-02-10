@@ -24,13 +24,13 @@
     "mnemonic_warning":"유효하지 않은 단어입니다. 다시 입력해주세요.",
     "mnemonic_confirm_btn": "확인",
 
-    "mnemonic_recovery_title":"복구 단어 확인하기",
-    "mnemonic_recovery_subtitle_1": "복구 단어의 순서를 맞춰주세요.",
-    "mnemonic_recovery_subtitle_2": "* 틀릴 경우 전 화면으로 돌아가 다시 한번 확인하세요.",
+    "mnemonic_confirm_title":"복구 단어 확인하기",
+    "mnemonic_confirm_subtitle_1": "복구 단어의 순서를 맞춰주세요.",
+    "mnemonic_confirm_subtitle_2": "* 3회 이상 오류 시 홈화면으로 돌아갑니다.",
     
     "mnemonic_succeess": "지갑이 생성되었습니다.",
     "mnemonic_false": "순서가 틀렸습니다.",
-    "mnemonic_recovery_warning":"다시 한번 확인해주세요.",
+    "mnemonic_confirm_warning":"다시 한번 확인해주세요.",
 
     
     "main_warning":"송금할 수 있는 토큰이 없습니다.",
@@ -41,8 +41,34 @@
     "send_title":"수취인 주소",
     "send_subtitle":"수취인 주소를 입력하세요.",
     "send_warning": "주소를 입력해주세요.",
-    "send_btn": "송금"
+    "send_btn": "송금",
 
+    "send_fee_min_warning": "수수료는 최소값(0.005)이상을 입금해야 합니다.",
+    "send_amount_max_warning": "최대 수량이상을 입금할 수 없습니다.",
+    "send_fee_warning": "보낼 수수료를 입력해주세요.",
+    "send_amount_warning": "보낼 수량을 입력해주세요.",
+    "send_amount":"전송할 토큰의 수량",
+    "send_amount+fee": "전송 수량(수량 + 수수료):",
+    "send_max_amount": "최대 전송 가능 수량(보유량- 수수료):",
+    "send_half": "절반",
+    "send_max":"최대",
+    "send_fee":"수수료",
+    "send_min": "최소",
+    "send_low": "낮음",
+    "send_av": "평균",
+    "send_memo": "메모",
+    "send_next": "Next",
+
+    "send_info": "입력하신 정보를 확인하세요.",
+    "send_info_amount": "수량",
+    "send_info_Total": "Total",
+    "send_current": "현재 가능 수량",
+    "send_trans_av": "전송 후 가능 수량",
+    "send_confirm_btn":"송금하기",
+
+    "send_success":"송금 완료",
+
+    "Exit": "앱을 종료하시겠습니까?"
 
 
 }

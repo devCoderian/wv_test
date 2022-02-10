@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     txt_container:{
-        width: 350,
+        width: 270,
         marginTop: 30,
         alignItems:'center',
     },

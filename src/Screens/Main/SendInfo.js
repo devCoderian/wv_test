@@ -4,14 +4,14 @@ import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Im
 import { useNavigation } from '@react-navigation/native';
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Topbar from '../../Components/Topbar';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 const SendInfo = () => {
   
+    const {t} = useTranslation();
     //보낼때 성공하면 꼭 초기화 해주기!!!!!!!
     const send_address = useSelector((state) => state.send_address);
     const navigation = useNavigation();
-    const [privkey, setPriveKey] =useState('');
-    // const [address, setAddress] =useState('rizon1rjp4thfjf4arxnh37u6stu8usr9quwe0zpqqtp');
     const [balance, setBalance] = useState('')
     const { send_amount, send_fee, send_memo } = useSelector((state) => state.sendInfo);
    
@@ -41,16 +41,16 @@ const SendInfo = () => {
                     }]}></View>
                 </View>
                 <View style = {{ marginTop: 40}} >
-                    <Text style = {{color: '#fff'}}>입력하신 정보를 확인하세요.</Text>
+                    <Text style = {{color: '#fff'}}>{t('send_info')}</Text>
                     {/* <Text style = {{color: '#fff'}}>주소</Text> */}
                 </View>
                 <View style = {[styles.info_wrapper, {height: 250}]}>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
-                        <Text style = {styles.txt_subtitle}>수량</Text>            
+                        <Text style = {styles.txt_subtitle}>{t('send_info_amount')}</Text>            
                         <Text style = {styles.txt_subtitle}>{send_amount} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
-                        <Text style = {styles.txt_subtitle}>수수료</Text>
+                        <Text style = {styles.txt_subtitle}>{t('send_fee')}</Text>
                         <Text style = {styles.txt_subtitle}>{send_fee} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
@@ -60,17 +60,17 @@ const SendInfo = () => {
                     </View>
                     <View style ={{width: 370, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.4)', alignSelf: 'center'}}></View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
-                        <Text style = {styles.txt_subtitle}>현재 가능 수량</Text>
+                        <Text style = {styles.txt_subtitle}>{t('send_current')}</Text>
                         <Text style = {styles.txt_subtitle}>{parseInt(balance)/1000000} atolo</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'space-between', paddingHorizontal: 10}}>
-                        <Text style = {styles.txt_subtitle}>전송 후 가능 수량</Text>
+                        <Text style = {styles.txt_subtitle}>{t('send_trans_av')}</Text>
                         {/* <Text style = {styles.txt_subtitle}>{(parseInt(balance)-(parseInt(send_amount)+ parseInt(send_fee)))/1000000} atolo</Text> */}
-                        <Text style = {styles.txt_subtitle}>{(balance-((parseFloat(send_amount)*1000000+parseFloat(send_fee)*100000)))/1000000} atolo</Text>
+                        <Text style = {styles.txt_subtitle}>{(balance-((parseFloat(send_amount)*1000000+parseFloat(send_fee)*1000000)))/1000000} atolo</Text>
                     </View>
                 </View>
                 <View style = {{ marginTop: 10}} >
-                    <Text style = {{color: '#fff'}}>수취인 주소</Text>
+                    <Text style = {{color: '#fff'}}>{t('send_title')}</Text>
                 </View>
                 <View style = {[styles.address_wrapper,{
                     alignItems: 'center'
@@ -79,8 +79,7 @@ const SendInfo = () => {
                 </View>
                 <View style={{justifyContent: 'center'}}>
                     <TouchableOpacity style = {styles.confirmBtn} onPress={()=> navigation.navigate('SendPincode')}>
-                    <Text style = {styles.confirm_txt}>송금하기</Text>
-                    {/* <Icon name = 'Home' size={20} color='#fff' /> */}
+                    <Text style = {styles.confirm_txt}>{t('send_confirm_btn')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

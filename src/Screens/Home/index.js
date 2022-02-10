@@ -54,11 +54,12 @@ const Home = () => {
           "hardwareBackPress",
           function(){
             console.log(isFocused)
-            Alert.alert("Stop","앱을 종료하시겠습니까?",[
-              { text:"아니오",
+            const exit = t('Exit');
+            Alert.alert("Stop",exit,[
+              { text:"cancle",
                 onPress: ()=> null,
                 style:"cancel" },
-              { text:"네",
+              { text:"Yes",
                 onPress: ()=> {
                     AsyncStorage.setItem('lang', i18n.language ).then((res) => {
                              console.log(res)

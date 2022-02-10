@@ -2,17 +2,17 @@ import React ,{ useState, useCallback, useEffect } from 'react';
 import BG from '../../../src/assets/images/bg_2.png';
 import { Text, TouchableOpacity, View, ImageBackground,StyleSheet, TextInput, Image, ScrollView, ScrollViewBase, Alert} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import rizonjs from '../../../rizonjs/dist/rizon'
 import RNSecureKeyStore, {ACCESSIBLE} from "react-native-secure-key-store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Topbar from '../../Components/Topbar';
 import { useDispatch } from 'react-redux';
 import { sendAddress } from '../../store/actions'
 //import { sendInfo } from '../../store/actions'
-
+import { useTranslation } from 'react-i18next';
 const SendAddress = () => {
     
 
+    const {t} = useTranslation();
     const [send_address, setAddress] = useState('');
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         backgroundColor: ' rgba(160, 160, 160, 0.4);'
     },
     txt_subtitle: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '400',
         color: '#fff'
     },
